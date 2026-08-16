@@ -1,0 +1,81 @@
+;; Test that BDOS_DRV_SET / BDOS_DRV_GET / BDOS_DRV_ALLRESET work as
+;; expected.
+;;
+;; Select a drive and confirm get-drive reports it back.  Then select
+;; an out of range drive number, 200, and confirm it is clamped to
+;; the highest valid drive, 15 (P:) - this is how cpmulator behaves.
+;; Finally, confirm BDOS_DRV_ALLRESET resets the current drive to 0.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remember the current drive, so it can be restored.
+        ld      c, BDOS_DRV_GET
+        call    BDOS
+        ld      (original_drive), a
+
+        ;; Selecting drive 3 should stick.
+        ld      e, 3
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      c, BDOS_DRV_GET
+        call    BDOS
+        cp      3
+        jr      nz, failed
+
+        ;; Selecting an out of range drive, 200, should clamp to 15.
+        ld      e, 200
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      c, BDOS_DRV_GET
+        call    BDOS
+        cp      15
+        jr      nz, failed
+
+        ;; Resetting all drives should bring us back to drive 0.
+        ld      c, BDOS_DRV_ALLRESET
+        call    BDOS
+
+        ld      c, BDOS_DRV_GET
+        call    BDOS
+        or      a
+        jr      nz, failed
+
+        ;; restore the original drive
+        ld      a, (original_drive)
+        ld      e, a
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; restore the original drive, even on failure
+        ld      a, (original_drive)
+        ld      e, a
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+original_drive:
+        db      0

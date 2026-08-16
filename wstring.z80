@@ -1,0 +1,18 @@
+;; Test that C_WRITESTRING works as expected.
+
+        org     100h
+
+include header.inc
+
+start:
+        ld      c, BDOS_C_WRITESTR
+        ld      de, msg
+        call    BDOS
+
+        ret
+
+msg:
+        db "PASSED."
+        db 0x0a
+        db 0x0d
+        db "$"

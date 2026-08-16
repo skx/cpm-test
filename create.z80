@@ -1,0 +1,76 @@
+;; Test that we can create a file.
+;;
+;;
+        org     100h
+
+include header.inc
+
+start:
+        ;; Does it exist?
+        ld      de, file1
+        call    file_exists
+        jr      z, already_present
+
+        ;; No.  create it!
+        ld      de, file1
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; How it should exist
+        ld      de, file1
+        call    file_exists
+        jr      nz, failed_to_create
+
+        ;; delete it
+        ld      de, file1
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; All OK
+        ret
+
+
+already_present:
+        ld      de, already_present_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed_to_create:
+        ld      de, create_failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+
+already_present_msg:
+        db "File already present.  Aborting"
+        db 0x0a, 0x0d, "$"
+
+create_failed_msg:
+        db "Failed to create.  Aborting"
+        db 0x0a, 0x0d, "$"
+
+passed_msg:
+        db "PASSED."
+        db 0x0a, 0x0d, "$"
+
+; CP/M FCBs
+; Byte 0: drive (0 = current)
+; Bytes 1-8: filename
+; Bytes 9-11: extension
+; Remaining bytes are initialized to zero.
+
+file1:
+        db      0
+        db      "CREATE  "
+        db      "ME "
+        ds      24,0
+
+
+INCLUDE  common.inc

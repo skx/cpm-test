@@ -1,0 +1,113 @@
+;; Test that BDOS_FILE_RENAME works as expected.
+;;
+;; Create OLDNAME.DAT, rename it to NEWNAME.DAT, and confirm that the
+;; old name has vanished while the new one has appeared.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remove any leftovers from a previous, aborted, run.
+        ld      de, old_file
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, new_file
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; Create the old file.
+        ld      de, old_file
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ld      de, old_file
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; It should exist now ...
+        ld      de, old_file
+        call    file_exists
+        jr      nz, failed
+
+        ;; ... and the new name shouldn't, yet.
+        ld      de, new_file
+        call    file_exists
+        jr      z, failed
+
+        ;; Rename OLDNAME.DAT to NEWNAME.DAT
+        ld      de, rename_fcb
+        ld      c, BDOS_FILE_RENAME
+        call    BDOS
+
+        ;; The old name should be gone ...
+        ld      de, old_file
+        call    file_exists
+        jr      z, failed
+
+        ;; ... and the new name should exist.
+        ld      de, new_file
+        call    file_exists
+        jr      nz, failed
+
+        ;; Clean up.
+        ld      de, new_file
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ;; Clean up whichever of the two names is still present.
+        ld      de, old_file
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, new_file
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+old_file:
+        db      0
+        db      "OLDNAME "
+        db      "DAT"
+        ds      24,0
+
+new_file:
+        db      0
+        db      "NEWNAME "
+        db      "DAT"
+        ds      24,0
+
+;; BDOS_FILE_RENAME expects a 32-byte structure: the first 16 bytes
+;; are the (drive + name + type) of the file to rename, the second
+;; 16 bytes are the (drive + name + type) it should be renamed to.
+rename_fcb:
+        db      0
+        db      "OLDNAME "
+        db      "DAT"
+        ds      4,0
+        db      0
+        db      "NEWNAME "
+        db      "DAT"
+        ds      4,0
+
+include common.inc

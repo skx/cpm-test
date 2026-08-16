@@ -1,0 +1,148 @@
+;; Test that BDOS_SEARCH_FIRST / BDOS_SEARCH_NEXT work as expected.
+;;
+;; Create three files matching a wildcard pattern, confirm a wildcard
+;; search finds exactly three matches, then delete them and confirm
+;; the same search now finds nothing.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remove any leftovers from a previous, aborted, run.
+        call    delete_all
+
+        ;; Create the three files we'll search for.
+        ld      de, file_a
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+        ld      de, file_a
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ld      de, file_b
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+        ld      de, file_b
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ld      de, file_c
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+        ld      de, file_c
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; A wildcard search should find exactly the three files above.
+        call    count_matches
+        cp      3
+        jr      nz, failed
+
+        ;; Remove them all again.
+        call    delete_all
+
+        ;; The same search should now find nothing at all.
+        ld      de, wildcard
+        ld      c, BDOS_SEARCH_FIRST
+        call    BDOS
+        cp      0xFF
+        jr      nz, failed
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        call    delete_all
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+;; Delete all three of our test files, ignoring errors.
+delete_all:
+        ld      de, file_a
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+        ld      de, file_b
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+        ld      de, file_c
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+        ret
+
+;; Count how many directory entries match our wildcard pattern.
+;; Returns the count in A.
+count_matches:
+        xor     a
+        ld      (match_count), a
+
+        ld      de, wildcard
+        ld      c, BDOS_SEARCH_FIRST
+        call    BDOS
+        cp      0xFF
+        jr      z, count_done
+        call    bump_count
+
+count_more:
+        ld      de, wildcard
+        ld      c, BDOS_SEARCH_NEXT
+        call    BDOS
+        cp      0xFF
+        jr      z, count_done
+        call    bump_count
+        jr      count_more
+
+count_done:
+        ld      a, (match_count)
+        ret
+
+bump_count:
+        ld      hl, match_count
+        inc     (hl)
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+match_count:
+        db      0
+
+file_a:
+        db      0
+        db      "SRCHA   "
+        db      "TS1"
+        ds      24,0
+
+file_b:
+        db      0
+        db      "SRCHB   "
+        db      "TS1"
+        ds      24,0
+
+file_c:
+        db      0
+        db      "SRCHC   "
+        db      "TS1"
+        ds      24,0
+
+;; A name with a unique enough prefix, and extension, that it can't
+;; be confused with files created by any of the other tests.
+wildcard:
+        db      0
+        db      "SRCH????"
+        db      "TS1"
+        ds      24,0
+
+include common.inc

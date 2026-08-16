@@ -1,0 +1,162 @@
+;; Test that BDOS_RANDREC works as expected.
+;;
+;; Write a file spanning more than one extent, then perform a known
+;; number of sequential reads and ask BDOS to compute the equivalent
+;; "random record" number - it should match how many records we read.
+
+        org     100h
+
+include header.inc
+
+DMA:                  EQU 0x80
+DMA_LEN:              EQU 128
+RECORD_COUNT:         EQU 200         ; spans more than one 128-record extent
+READ_COUNT:           EQU 130         ; how many of them we'll read sequentially
+
+
+start:
+        ;; delete file if already exists
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; file shouldn't exist
+        ld      de, filename
+        call    file_exists
+        jp      z, already_present
+
+        ;; create the file, and populate it - contents are unimportant
+        ld      de, filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ld      hl, RECORD_COUNT
+        ld      (remaining), hl
+
+write_loop:
+        ld      de, filename
+        ld      c, BDOS_FILE_WRITE
+        call    BDOS
+        or      a
+        jp      nz, failed
+
+        ld      hl, (remaining)
+        dec     hl
+        ld      (remaining), hl
+        ld      a, h
+        or      l
+        jr      nz, write_loop
+
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; Reset the extent/current-record fields before re-opening.
+        xor     a
+        ld      (filename+12), a        ; EX
+        ld      (filename+13), a        ; S1
+        ld      (filename+14), a        ; S2
+
+        ld      de, filename
+        ld      c, BDOS_FILE_OPEN
+        call    BDOS
+
+        xor     a
+        ld      (filename+32), a        ; CR
+
+        ;; Read READ_COUNT records sequentially - this crosses the
+        ;; extent boundary at record 128.
+        ld      hl, READ_COUNT
+        ld      (remaining), hl
+
+read_loop:
+        ld      de, filename
+        ld      c, BDOS_FILE_READ
+        call    BDOS
+        or      a
+        jp      nz, failed
+
+        ld      hl, (remaining)
+        dec     hl
+        ld      (remaining), hl
+        ld      a, h
+        or      l
+        jr      nz, read_loop
+
+        ;; Ask BDOS to compute the random record number matching the
+        ;; sequential position we've just reached.
+        ld      de, filename
+        ld      c, BDOS_RANDREC
+        call    BDOS
+
+        ;; R2 (the top byte) must be zero - we're nowhere near that big.
+        ld      a, (filename+35)
+        or      a
+        jp      nz, failed
+
+        ;; R0/R1 should equal READ_COUNT.
+        ld      hl, (filename+33)
+        ld      de, READ_COUNT
+        or      a
+        sbc     hl, de
+        jp      nz, failed
+
+        ;; Clean up.
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_present:
+        ld      de, already_exists_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_exists_msg:
+        db      "File already present.  Aborting"
+        db      0x0a, 0x0d, "$"
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+remaining:
+        dw      0
+
+;; The FCB record for the file we'll write, then position within.
+filename:
+        db      0
+        db      "RANDREC "
+        db      "DAT"
+        ds      24,0
+
+include common.inc

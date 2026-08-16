@@ -1,0 +1,232 @@
+;; Test that BDOS_RANDOM_READ / BDOS_RANDOM_WRITE work as expected.
+;;
+;; Write RECORD_COUNT records sequentially, each one filled with its
+;; own record number, then read a handful of them back out of order
+;; via random access.  Finally use random *write* to modify a single
+;; record in place, and confirm its neighbours were untouched.
+
+        org     100h
+
+include header.inc
+
+DMA:                  EQU 0x80
+DMA_LEN:              EQU 128
+RECORD_COUNT:         EQU 10
+
+
+start:
+        ;; delete file if already exists
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; file shouldn't exist
+        ld      de, filename
+        call    file_exists
+        jp      z, already_present
+
+        ;; create the file
+        ld      de, filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; write RECORD_COUNT records sequentially, each one filled
+        ;; with its own record number.
+        xor     a
+        ld      (seq_rec), a
+
+seq_write:
+        ld      a, (seq_rec)
+        ld      b, DMA_LEN
+        ld      hl, DMA
+fill_loop:
+        ld      (hl), a
+        inc     hl
+        djnz    fill_loop
+
+        ld      de, filename
+        ld      c, BDOS_FILE_WRITE
+        call    BDOS
+        or      a
+        jp      nz, failed
+
+        ld      a, (seq_rec)
+        inc     a
+        ld      (seq_rec), a
+        cp      RECORD_COUNT
+        jr      nz, seq_write
+
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; Re-open before switching to random access.
+        xor     a
+        ld      (filename+12), a        ; EX
+        ld      (filename+13), a        ; S1
+        ld      (filename+14), a        ; S2
+        ld      (filename+32), a        ; CR
+
+        ld      de, filename
+        ld      c, BDOS_FILE_OPEN
+        call    BDOS
+
+        ;; Read a handful of records back, out of sequence.
+        ld      a, 7
+        call    random_read_check
+        jp      nz, failed
+
+        ld      a, 2
+        call    random_read_check
+        jp      nz, failed
+
+        ld      a, 9
+        call    random_read_check
+        jp      nz, failed
+
+        ld      a, 0
+        call    random_read_check
+        jp      nz, failed
+
+        ;; Now overwrite record 3 in place via random write, using a
+        ;; value (0xAA) that can't be confused with a record number.
+        xor     a
+        ld      (filename+34), a        ; random record, middle byte
+        ld      (filename+35), a        ; random record, high byte
+        ld      a, 3
+        ld      (filename+33), a        ; random record, low byte
+
+        ld      b, DMA_LEN
+        ld      hl, DMA
+        ld      a, 0xAA
+fill_aa:
+        ld      (hl), a
+        inc     hl
+        djnz    fill_aa
+
+        ld      de, filename
+        ld      c, BDOS_RANDOM_WRITE
+        call    BDOS
+        or      a
+        jp      nz, failed
+
+        ;; Confirm record 3 now reads back as 0xAA throughout.
+        ld      a, 3
+        ld      (expected), a
+        xor     a
+        ld      (filename+34), a
+        ld      (filename+35), a
+        ld      a, 3
+        ld      (filename+33), a
+
+        ld      de, filename
+        ld      c, BDOS_RANDOM_READ
+        call    BDOS
+        or      a
+        jp      nz, failed
+
+        ld      hl, DMA
+        ld      b, DMA_LEN
+check_aa:
+        ld      a, (hl)
+        cp      0xAA
+        jp      nz, failed
+        inc     hl
+        djnz    check_aa
+
+        ;; Confirm neighbouring records 2 and 4 are untouched.
+        ld      a, 2
+        call    random_read_check
+        jp      nz, failed
+
+        ld      a, 4
+        call    random_read_check
+        jp      nz, failed
+
+        ;; clean up
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+;; Randomly-read the record number given in A, and confirm every
+;; byte of the DMA buffer that comes back equals that same record
+;; number.  Returns with the zero flag set on success.
+random_read_check:
+        ld      (expected), a
+        ld      (filename+33), a        ; random record, low byte
+        xor     a
+        ld      (filename+34), a        ; random record, middle byte
+        ld      (filename+35), a        ; random record, high byte
+
+        ld      de, filename
+        ld      c, BDOS_RANDOM_READ
+        call    BDOS
+        or      a
+        ret     nz                      ; BDOS reported an error
+
+        ld      hl, DMA
+        ld      b, DMA_LEN
+        ld      a, (expected)
+rrc_loop:
+        cp      (hl)
+        ret     nz                      ; mismatch
+        inc     hl
+        djnz    rrc_loop
+        xor     a                       ; every byte matched
+        ret
+
+
+already_present:
+        ld      de, already_exists_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_exists_msg:
+        db      "File already present.  Aborting"
+        db      0x0a, 0x0d, "$"
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+seq_rec:
+        db      0
+expected:
+        db      0
+
+;; The FCB record for the file we'll write to, and read-from
+filename:
+        db      0
+        db      "RANDMRW "
+        db      "DAT"
+        ds      24,0
+
+include common.inc

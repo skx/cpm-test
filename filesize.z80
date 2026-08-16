@@ -1,0 +1,129 @@
+;; Test that BDOS_COMPUTE_FILESZ works as expected.
+;;
+;; Write a file containing a known number of records, spanning more
+;; than one 128-record extent, then confirm that the computed file
+;; size (in records) matches what we wrote.
+
+        org     100h
+
+include header.inc
+
+DMA:                  EQU 0x80
+DMA_LEN:              EQU 128
+RECORD_COUNT:         EQU 130         ; deliberately more than one extent (128 records)
+
+
+start:
+        ;; delete file if already exists
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; file shouldn't exist
+        ld      de, filename
+        call    file_exists
+        jr      z, already_present
+
+        ;; create the file
+        ld      de, filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; write RECORD_COUNT records, contents are unimportant
+        ld      hl, RECORD_COUNT
+        ld      (remaining), hl
+
+write_loop:
+        ld      de, filename
+        ld      c, BDOS_FILE_WRITE
+        call    BDOS
+
+        ld      hl, (remaining)
+        dec     hl
+        ld      (remaining), hl
+        ld      a, h
+        or      l
+        jr      nz, write_loop
+
+        ;; Close the file.
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; Reset the extent/current-record fields before asking for
+        ;; the file size - see readwrite.z80 for why this matters.
+        xor     a
+        ld      (filename+12), a        ; EX
+        ld      (filename+13), a        ; S1
+        ld      (filename+14), a        ; S2
+        ld      (filename+32), a        ; CR
+
+        ;; Ask BDOS to compute the size, in records, of the file.
+        ld      de, filename
+        ld      c, BDOS_COMPUTE_FILESZ
+        call    BDOS
+
+        ;; The 24 bit result is left in the FCB's random-record field,
+        ;; at offset 33 (r0, low byte first).  Our file is nowhere
+        ;; near big enough for the top byte to be anything but zero.
+        ld      a, (filename+35)
+        or      a
+        jr      nz, failed
+
+        ld      hl, (filename+33)
+        ld      de, RECORD_COUNT
+        or      a
+        sbc     hl, de
+        jr      nz, failed
+
+        ;; Clean up.
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_present:
+        ld      de, already_exists_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_exists_msg:
+        db      "File already present.  Aborting"
+        db      0x0a, 0x0d, "$"
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+remaining:
+        dw      0
+
+;; The FCB record for the file we'll write, then measure.
+filename:
+        db      0
+        db      "FILESIZE"
+        db      "DAT"
+        ds      24,0
+
+include common.inc

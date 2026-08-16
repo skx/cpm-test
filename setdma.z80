@@ -1,0 +1,172 @@
+;; Test that BDOS_SET_DMA works as expected.
+;;
+;; Write a record to a file via the default DMA address (0x0080), then
+;; move the DMA address to a buffer of our own and read the record
+;; back into that.  Confirm the data lands in our own buffer, rather
+;; than at the default address, and that it matches what was written.
+
+        org     100h
+
+include header.inc
+
+DEFAULT_DMA:         EQU 0x80
+DMA_LEN:             EQU 128
+
+
+start:
+        ;; delete the file if it already exists
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; file shouldn't exist
+        ld      de, filename
+        call    file_exists
+        jp      z, already_present
+
+        ;; create the file
+        ld      de, filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; fill the default DMA area with 'A' characters, and write
+        ;; that out as record 0.
+        ld      b, DMA_LEN
+        ld      hl, DEFAULT_DMA
+fill_a:
+        ld      (hl), 'A'
+        inc     hl
+        djnz    fill_a
+
+        ld      de, filename
+        ld      c, BDOS_FILE_WRITE
+        call    BDOS
+
+        ;; Close, then re-open, the file - so we're reading back
+        ;; what was actually written to disk.
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        xor     a
+        ld      (filename+12), a        ; EX
+        ld      (filename+13), a        ; S1
+        ld      (filename+14), a        ; S2
+
+        ld      de, filename
+        ld      c, BDOS_FILE_OPEN
+        call    BDOS
+
+        xor     a
+        ld      (filename+32), a        ; CR
+
+        ;; Now overwrite the default DMA area with 'Z' characters -
+        ;; if the forthcoming read still lands here, rather than in
+        ;; our own buffer, we'll see 'Z' where we expect 'A'.
+        ld      b, DMA_LEN
+        ld      hl, DEFAULT_DMA
+fill_z:
+        ld      (hl), 'Z'
+        inc     hl
+        djnz    fill_z
+
+        ;; Move the DMA address to our own buffer.
+        ld      de, our_dma
+        ld      c, BDOS_SET_DMA
+        call    BDOS
+
+        ;; Read record 0 back - it should land in our_dma.
+        ld      de, filename
+        ld      c, BDOS_FILE_READ
+        call    BDOS
+
+        ;; Restore the default DMA address, so we don't confuse any
+        ;; test which runs after us in the same session.
+        push    af
+        ld      de, DEFAULT_DMA
+        ld      c, BDOS_SET_DMA
+        call    BDOS
+        pop     af
+
+        or      a
+        jr      nz, failed
+
+        ;; Confirm our own buffer holds the 'A' pattern we wrote.
+        ld      hl, our_dma
+        ld      b, DMA_LEN
+check_a:
+        ld      a, (hl)
+        cp      'A'
+        jr      nz, failed
+        inc     hl
+        djnz    check_a
+
+        ;; Confirm the default DMA area was left untouched by the
+        ;; read - it should still hold the 'Z' pattern.
+        ld      hl, DEFAULT_DMA
+        ld      b, DMA_LEN
+check_z:
+        ld      a, (hl)
+        cp      'Z'
+        jr      nz, failed
+        inc     hl
+        djnz    check_z
+
+        ;; Close, and remove, the file we created.
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_present:
+        ld      de, already_exists_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, DEFAULT_DMA
+        ld      c, BDOS_SET_DMA
+        call    BDOS
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_exists_msg:
+        db      "File already present.  Aborting"
+        db      0x0a, 0x0d, "$"
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+;; The FCB record for the file we'll write to, and read-from
+filename:
+        db      0
+        db      "SETDMA  "
+        db      "DAT"
+        ds      24,0
+
+;; A buffer of our own, well away from the default DMA address, to
+;; use as the DMA target.
+        ds      256, 0
+our_dma:
+        ds      DMA_LEN, 0
+
+include common.inc

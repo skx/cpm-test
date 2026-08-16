@@ -1,0 +1,162 @@
+;; Create a file and use the sequential write method to write records of increasing numbers.
+;;
+;; Read the data back and confirm it matches expectations.
+;;
+;; Delete the file on startup, if it exists, rather than on exit so we can examine it
+;; if we wish.
+
+        org     100h
+
+include header.inc
+
+DMA:                 EQU 0x80
+DMA_LEN:             EQU 128
+
+
+start:
+        ;; delete file if already exists
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; file shouldn't exist
+        ld      de, filename
+        call    file_exists
+        jr      z, already_present
+
+        ;; create the file with random records
+        call    populate_file
+
+        ;; test reading it back
+        call    test_data
+
+        ;; report success
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+
+;; The file we're reading from, and writing to, already exists
+;; abort
+already_present:
+        ld      de, already_exists_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+;; Create a file with 256 records
+populate_file:
+        ld      de,filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; Loop from 0x00 - 0xFF starting at 0x00
+        ld a, 0x00
+
+write_record_loop:
+        push af
+        ld b, DMA_LEN
+        ld hl,DMA
+fill_dma_loop:
+        ld      (hl),a
+        inc     hl
+        djnz    fill_dma_loop
+
+        ; write record
+        ld      c, BDOS_FILE_WRITE
+        ld      de, filename
+        call    BDOS
+
+        pop     af
+        inc     a
+        cp      0
+        jr      nz, write_record_loop
+
+        ;; Close the file
+        ld       de, filename
+        ld       c, BDOS_FILE_CLOSE
+        call     BDOS
+        ret
+
+;; Test the file contains the records we expect
+test_data:
+        ;; Reset the extent/current-record fields left over from
+        ;; populate_file before re-opening: some BDOS implementations
+        ;; (e.g. ntvcm) honour a stale EX field instead of always
+        ;; opening extent 0, which breaks sequential reads from the
+        ;; start of the file.
+        xor     a
+        ld      (filename+12), a        ; EX
+        ld      (filename+13), a        ; S1
+        ld      (filename+14), a        ; S2
+
+        ld      de, filename
+        ld      c, BDOS_FILE_OPEN
+        call    BDOS
+
+        ;; Ensure sequential reads start at record 0 of the file.
+        xor     a
+        ld      (filename+32), a        ; CR
+
+        ;; Right here we loop from 0x00 - 0xFF starting at 0x00
+        ld       a, 0x00
+read_record:
+        ;; read the next record into the DMA area
+        push    af
+        ld      de, filename
+        ld      c, BDOS_FILE_READ
+        call    BDOS
+        pop     af
+
+        ; Does this record contain the current record number?
+        ld      hl, DMA
+        ld      b, DMA_LEN
+loopy:
+        cp      (hl)
+        jr      nz, RECORD_FAILED
+        inc     hl
+        dec     b
+        jr      nz, loopy
+
+        inc     a
+        cp      0x00
+        jr      nz, read_record
+
+        ;; Close the file
+        ld       de, filename
+        ld       c, BDOS_FILE_CLOSE
+        call     BDOS
+
+        ret
+
+RECORD_FAILED:
+        push af
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        jp      0x0000                ; Terminate execution.
+
+
+already_exists_msg:
+        db "File already present.  Aborting"
+        db 0x0a, 0x0d, "$"
+
+passed_msg:
+        db "PASSED."
+        db 0x0a, 0x0d, "$"
+
+failed_msg:
+        db "FAILED."
+        db 0x0a, 0x0d, "$"
+
+;; The FCB record for the file we'll write to, and read-from
+filename:
+        db      0
+        db      "SEQ_RDWT"
+        db      "DAT"
+        ds      24,0
+
+include common.inc

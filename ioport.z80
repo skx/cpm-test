@@ -1,0 +1,79 @@
+;; Test that BDOS_GET_IOBYTE / BDOS_SET_IOBYTE work as expected.
+;;
+;; Set the IOBYTE to a handful of values in turn, and confirm that
+;; the get-iobyte call reports back whatever we just set.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remember the current IOBYTE, so it can be restored.
+        ld      c, BDOS_GET_IOBYTE
+        call    BDOS
+        ld      (original_iobyte), a
+
+        ld      a, 0x00
+        call    try_iobyte
+        jr      nz, failed
+
+        ld      a, 0xFF
+        call    try_iobyte
+        jr      nz, failed
+
+        ld      a, 0x5A
+        call    try_iobyte
+        jr      nz, failed
+
+        ;; restore the original IOBYTE
+        ld      a, (original_iobyte)
+        ld      e, a
+        ld      c, BDOS_SET_IOBYTE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; try to restore the original IOBYTE even on failure
+        ld      a, (original_iobyte)
+        ld      e, a
+        ld      c, BDOS_SET_IOBYTE
+        call    BDOS
+        ret
+
+
+;; Set the IOBYTE to the value in A, then confirm get-iobyte reports
+;; it back.  Returns with the zero flag set on success.
+try_iobyte:
+        ld      (expected), a
+        ld      e, a
+        ld      c, BDOS_SET_IOBYTE
+        call    BDOS
+
+        ld      c, BDOS_GET_IOBYTE
+        call    BDOS
+
+        ld      hl, expected
+        cp      (hl)
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+original_iobyte:
+        db      0
+expected:
+        db      0

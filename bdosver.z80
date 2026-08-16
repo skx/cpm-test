@@ -1,0 +1,40 @@
+;; Test that BDOS_GET_VERSION works as expected.
+;;
+;; Function 12 returns the BDOS/CP/M version number in HL: L holds
+;; the version (0x22 for CP/M 2.2), H is 0x00 for a CP/M system.
+
+        org     100h
+
+include header.inc
+
+start:
+        ld      c, BDOS_GET_VERSION
+        call    BDOS
+
+        ld      a, h
+        or      a
+        jr      nz, failed
+
+        ld      a, l
+        cp      0x22
+        jr      nz, failed
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"

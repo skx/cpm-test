@@ -1,0 +1,96 @@
+;; Test that BDOS_GET_SET_USER works as expected.
+;;
+;; Set the user number to each of 1-15 in turn, and confirm that the
+;; get-user call reports the value we just set.
+;;
+;; Then attempt to set an out of range user number, 200.  The classic
+;; CP/M 2.2 BDOS masks the requested value to its low 4 bits rather
+;; than rejecting it, so 200 (0xC8) should result in a user number of
+;; 8 (0xC8 AND 0x0F).
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remember the current user-number, so it can be restored
+        ;; before we exit - whether we pass or fail.
+        ld      c, BDOS_GET_SET_USER
+        ld      e, 0xFF
+        call    BDOS
+        ld      (original_user), a
+
+        ;; Confirm setting each of the user-numbers 1-15 sticks.
+        ld      a, 1
+        ld      (loop_user), a
+
+try_user:
+        ld      a, (loop_user)
+        ld      e, a
+        ld      c, BDOS_GET_SET_USER
+        call    BDOS
+
+        ld      c, BDOS_GET_SET_USER
+        ld      e, 0xFF
+        call    BDOS
+
+        ld      hl, loop_user
+        cp      (hl)
+        jr      nz, failed
+
+        ld      a, (loop_user)
+        inc     a
+        ld      (loop_user), a
+        cp      16
+        jr      nz, try_user
+
+        ;; The user-number is now 15.  Try setting an out of range
+        ;; value, 200, and confirm it was masked to its low 4 bits -
+        ;; 200 (0xC8) AND 0x0F == 8.
+        ld      c, BDOS_GET_SET_USER
+        ld      e, 200
+        call    BDOS
+
+        ld      c, BDOS_GET_SET_USER
+        ld      e, 0xFF
+        call    BDOS
+
+        cp      8
+        jr      nz, failed
+
+        ;; restore the original user-number
+        ld      a, (original_user)
+        ld      e, a
+        ld      c, BDOS_GET_SET_USER
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; restore the original user-number, even on failure
+        ld      a, (original_user)
+        ld      e, a
+        ld      c, BDOS_GET_SET_USER
+        call    BDOS
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+original_user:
+        db      0
+loop_user:
+        db      0

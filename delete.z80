@@ -1,0 +1,128 @@
+;; Create three files; test1.txt, test2.txt, & test3.txt
+;;
+;; Confirm deleting "test?.txt" removes all three - because
+;; afterwards opening them will fail.
+;;
+;;
+        org     100h
+
+include header.inc
+
+start:
+        ;; Create test1.txt
+        ld      de,file1
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+        call    check_error
+
+        ;; Close the file
+        ld      de,file1
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; Create test2.txt
+        ld      de,file2
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+        call    check_error
+
+        ld      de,file2
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; Create test3.txt
+        ld      de,file3
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+        call    check_error
+
+        ld      de,file3
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; delete all three files
+        ld      de, files
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; try opening the file1
+        ld     de, file1
+        ld     c,  BDOS_FILE_OPEN
+        call   BDOS
+        call   check_delete
+
+        ;; try opening the file2
+        ld     de, file2
+        ld     c, BDOS_FILE_OPEN
+        call   BDOS
+        call   check_delete
+
+        ;; try opening the file3
+        ld     de, file3
+        ld     c, BDOS_FILE_OPEN
+        call   BDOS
+        call   check_delete
+
+        ;; All okay
+        ld     de, ok_msg
+        ld     c, BDOS_C_WRITESTR
+        call   BDOS
+        ret
+
+
+check_error:
+        cp      0ffh
+        ret     nz
+        ld      de,create_error_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+;; abort if the delete fails
+check_delete:
+        cp 0ffh
+        ret z
+        ld      de, delete_error_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+; CP/M FCBs
+; Byte 0: drive (0 = current)
+; Bytes 1-8: filename
+; Bytes 9-11: extension
+; Remaining bytes are initialized to zero.
+
+file1:
+        db      0
+        db      "TEST1   "
+        db      "TXT"
+        ds      24,0
+
+file2:
+        db      0
+        db      "TEST2   "
+        db      "TXT"
+        ds      24,0
+
+file3:
+        db      0
+        db      "TEST3   "
+        db      "TXT"
+        ds      24,0
+
+files:
+        db      0
+        db      "TEST?   "
+        db      "TXT"
+        ds      24,0
+
+create_error_msg:
+        db      "DELETE - FAIL File creation failed.\n$"
+
+delete_error_msg:
+        db      "DELETE - FAIL: File deletion failed.\n$"
+
+ok_msg:
+        db      "PASSED.\n$"
