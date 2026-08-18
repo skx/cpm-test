@@ -21,6 +21,20 @@ To make things simpler for users I've commited binaries alongside the source.
 
 
 
+# Limitations
+
+Not all emulators care about user-numbers, because little real-world software seemed to use them.  Similarly a lot of emulators assume there is `A:` and nothing else.
+
+In short a failure to run these examples does **not** mean a particular emulator is broken, it just means that it works differently to my own.
+
+Because I do want to keep things portable I neglected to run tests that read from the console, which would be harder to automate.   I also skipped all the disk-based I/O, using sectors, tracks, etc, because I don't implement those things in my own emulator.
+
+That said additional tests would be welcome, and adding instructions for other emulators too -  I guess RunCPM is another obvious one to compare against.
+t
+
+
+
+
 # Usage
 
 All the binaries can be executed, in turn, via:
