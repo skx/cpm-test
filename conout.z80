@@ -3,7 +3,6 @@
         org     100h
 
 start:
-
         ;; Get the address of the BIOS
         ld      hl,(0x0001)
         dec     hl
@@ -14,7 +13,7 @@ start:
         ld      de,12
         add     hl,de
 
-        ; Save address of CONOUT jump-table entry
+        ;; Save address of CONOUT jump-table entry
         ld      (conout+1),hl
 
         ;; Write the message
@@ -36,6 +35,9 @@ start:
         ld	c, 'D'
         call    conout
 
+        ld	c, '.'
+        call    conout
+
         ld	c, 0x0a
         call    conout
 
@@ -46,6 +48,6 @@ start:
         ret
 
 
-;; The target of this jump will be self-modified
+;; The target of this jump will be self-modified.
 conout:
         jp 0x0000
