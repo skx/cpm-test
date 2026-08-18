@@ -2,8 +2,8 @@
 ;; expected.
 ;;
 ;; Select a drive and confirm get-drive reports it back.  Then select
-;; an out of range drive number, 200, and confirm it is clamped to
-;; the highest valid drive, 15 (P:) - this is how cpmulator behaves.
+;; an out of range drive number, 200, and confirm it is masked to
+;; the appropriate value.
 ;; Finally, confirm BDOS_DRV_ALLRESET resets the current drive to 0.
 
         org     100h
@@ -26,14 +26,15 @@ start:
         cp      3
         jr      nz, failed
 
-        ;; Selecting an out of range drive, 200, should clamp to 15.
+        ;; Selecting an out of range drive, 200, should .
         ld      e, 200
         ld      c, BDOS_DRV_SET
         call    BDOS
 
+        ;; 200 & 0x0f -> 8.
         ld      c, BDOS_DRV_GET
         call    BDOS
-        cp      15
+        cp      8
         jr      nz, failed
 
         ;; Resetting all drives should bring us back to drive 0.
