@@ -37,7 +37,7 @@ all: $(TARGETS)
 test: all
 	@echo "Testing with driver: $(DRIVER) FILE.COM"
 	@for i in *.com ; do \
-		printf "\t$$i "; $(DRIVER) $$i ; \
+		printf "\t$$i\t"; $(DRIVER) $$i ; \
 	done
 
 # Test with all the known drivers, assuming they're available.
