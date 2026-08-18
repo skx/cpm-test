@@ -1,0 +1,51 @@
+;; Test that BIOS CONOUTworks as expected.
+
+        org     100h
+
+start:
+
+        ;; Get the address of the BIOS
+        ld      hl,(0x0001)
+        dec     hl
+        dec     hl
+        dec     hl
+
+        ;; Get CONOUT address from the jump-table
+        ld      de,12
+        add     hl,de
+
+        ; Save address of CONOUT jump-table entry
+        ld      (conout+1),hl
+
+        ;; Write the message
+        ld	c, 'P'
+        call    conout
+
+        ld	c, 'A'
+        call    conout
+
+        ld	c, 'S'
+        call    conout
+
+        ld	c, 'S'
+        call    conout
+
+        ld	c, 'E'
+        call    conout
+
+        ld	c, 'D'
+        call    conout
+
+        ld	c, 0x0a
+        call    conout
+
+        ld	c, 0x0d
+        call    conout
+
+        ;; Over now
+        ret
+
+
+;; The target of this jump will be self-modified
+conout:
+        jp 0x0000
