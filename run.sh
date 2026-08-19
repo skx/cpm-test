@@ -1,7 +1,21 @@
 #!/bin/bash
 #
-# For each of our tests run them with a list of
-# known emulators
+# For each of our tests run them with a list of known emulators
+#
+# NOTE: Some emulators require upper/lower cased filenames, and
+# some want the .COM suffix to be stripped.
+#
+# For example:
+#
+#  $ ./tnylpo/tnylpo SEARCH
+#  tnylpo: command file name (SEARCH) not valid
+#
+# So we copy to "tmp.com" and execute as just "tmp":
+#
+#  $ cp SEARCH.COM  tmp.com
+#  $ ./tnylpo/tnylpo  tmp
+#  PASSED.
+#
 #
 
 
@@ -10,7 +24,7 @@
 # Print a header
 #
 echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | xx | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
-
+echo "| ---- | -- | -- | -- |"
 
 #
 # Did running the given command produce "PASSED" in stdout?
