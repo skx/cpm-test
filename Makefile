@@ -24,8 +24,8 @@ MAKEFLAGS += --no-print-directory
 PASMO := pasmo
 
 # Sources and targets
-SOURCES := $(wildcard *.z80)
-TARGETS := $(SOURCES:.z80=.com)
+SOURCES := $(wildcard *.Z80)
+TARGETS := $(SOURCES:.Z80=.COM)
 DRIVER := cpmulator -input=stty
 
 .PHONY: all clean test
@@ -36,7 +36,7 @@ all: $(TARGETS)
 # Test with a single driver
 test: all
 	@echo "Testing with driver: $(DRIVER) FILE.COM"
-	@for i in *.com ; do \
+	@for i in *.COM ; do \
 		printf "\t$$i\t"; $(DRIVER) $$i ; \
 	done
 
@@ -48,7 +48,7 @@ test-all:
 
 
 # Assemble .z80 -> .com
-%.com: %.z80
+%.COM: %.Z80
 	$(PASMO) $< $@
 
 # Remove generated COM files
