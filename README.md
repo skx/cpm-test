@@ -23,14 +23,14 @@ To make things simpler for users I've commited binaries alongside the source.
 
 # Limitations
 
-Not all emulators care about user-numbers, because little real-world software seemed to use them.  Similarly a lot of emulators assume there is `A:` and nothing else.
+Not all emulators care about user-numbers, because little real-world software seemed to use them, the same applies to the I/O byte.  Similarly a lot of emulators assume there is `A:` and nothing else so they don't need to handle keeping a persistant "active drive".
 
-In short a failure to run these examples does **not** mean a particular emulator is broken, it just means that it works differently to my own.
+So remember a failure to run these examples does **not** mean a particular emulator is broken; it might be that they deliberately chose not to implement specific things.
 
 Because I do want to keep things portable I neglected to run tests that read from the console, which would be harder to automate.   I also skipped all the disk-based I/O, using sectors, tracks, etc, because I don't implement those things in my own emulator.
 
-That said additional tests would be welcome, and adding instructions for other emulators too -  I guess RunCPM is another obvious one to compare against.
-t
+The tests here, with the exception of [CONOUT.Z80](CONOUT.Z80), are all BDOS tests because that's the meat of CP/M.  It seems like there are no reasonable ways to exercise the BIOS.
+
 
 
 
