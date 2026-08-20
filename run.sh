@@ -19,10 +19,21 @@
 #
 
 
+#
+# Failure logs, one per emulator
+#
+emulators=(cpm cpmulator iz-cpm ntvcm tnylpo)
+
+for emulator in "${emulators[@]}"; do
+    rm -f "failures.${emulator}"
+done
+
 
 #
 # Print a header
 #
+echo "### Test Results $(date +%D)"
+echo ""
 echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
 echo "| ---- | -- | --  | -- | -- | -- |"
 
@@ -31,17 +42,28 @@ echo "| ---- | -- | --  | -- | -- | -- |"
 #
 # Hide STDERR.
 #
-function wasPass {
+# If it failed, append the complete output to the emulator's
+# failure log.
+#
+wasPass() {
+    local emulator="$1"
+    local test="$2"
+    shift 2
+
     "$@" > out.tmp 2>&1
 
-    if ( grep --silent "PASSED" out.tmp ) ; then
+    if grep --silent "PASSED" out.tmp; then
         return 0
     else
+        {
+            echo "===== ${test} ====="
+            cat out.tmp
+            echo
+        } >> "failures.${emulator}"
+
         return 1
     fi
 }
-
-
 
 #
 # For each test
@@ -65,7 +87,7 @@ for file in *.COM; do
     # CPM - copy to a lower-cased name, and execute without the ".com" suffix
     #
     cmd=(./cpm/cpm --exec tmp)
-    if wasPass "${cmd[@]}" ; then
+    if wasPass "cpm" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL |"
@@ -75,7 +97,7 @@ for file in *.COM; do
     # CPMULATOR - keep the name as-is
     #
     cmd=(./cpmulator/cpmulator --input=stty "${file}")
-    if wasPass "${cmd[@]}" ; then
+    if wasPass "cpmulator" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL |"
@@ -86,7 +108,7 @@ for file in *.COM; do
     # iz-cpm - keep the name as-is
     #
     cmd=(./iz-cpm/target/debug/iz-cpm "${file}")
-    if wasPass "${cmd[@]}" ; then
+    if wasPass "iz-cpm" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL|"
@@ -97,7 +119,7 @@ for file in *.COM; do
     # ntvcm - keep the name as-is
     #
     cmd=(./ntvcm/ntvcm "${file}")
-    if wasPass "${cmd[@]}" ; then
+    if wasPass "ntvcm" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL |"
@@ -110,7 +132,7 @@ for file in *.COM; do
     # This wants the filename in lower-case - and without the .com suffix
     #
     cmd=(./tnylpo/tnylpo tmp)
-    if wasPass "${cmd[@]}" ; then
+    if wasPass "tnylpo" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL |"
@@ -126,6 +148,25 @@ for file in *.COM; do
     #
     rm "tmp.com"
 
+done
+
+#
+# Print failures
+#
+for emulator in "${emulators[@]}"; do
+    if [[ -f "failures.${emulator}" ]]; then
+        echo
+        echo "#### Failures for ${emulator}"
+        echo
+        cat "failures.${emulator}"
+    fi
+done
+
+#
+# Remove failure logs
+#
+for emulator in "${emulators[@]}"; do
+    rm -f "failures.${emulator}"
 done
 
 #

@@ -62,6 +62,9 @@ That said you can run the tests yourself to receive current results.
 * Run `./setup.sh` to clone each emulator from source.
 * Run `./run.sh` to output a markdown table of results.
 
+
+### Test Results 08/20/26
+
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
 | AWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
@@ -81,3 +84,113 @@ That said you can run the tests yourself to receive current results.
 | SETDMA.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | USERNUM.COM |  FAIL | ✔️ | ✔️ | FAIL | ✔️ |
 | WSTRING.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+
+#### Failures for cpm
+
+===== AWRITE.COM =====
+
+A>
+
+A>
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=0050  HL=d659  SP=d471
+Stack =  107 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=0041  HL=d659  SP=d471
+Stack =  10e db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=0053  HL=d659  SP=d471
+Stack =  115 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=0053  HL=d659  SP=d471
+Stack =  11c db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=0045  HL=d659  SP=d471
+Stack =  123 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=0044  HL=d659  SP=d471
+Stack =  12a db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=002e  HL=d659  SP=d471
+Stack =  131 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=000a  HL=d659  SP=d471
+Stack =  138 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044  BC=0004  DE=000d  HL=d659  SP=d471
+Stack =  13f db69 d588 4f43  14d 2424 2024 2020
+
+
+===== DRIVE.COM =====
+
+A>
+FAILED.
+
+A>
+
+===== FILESIZE.COM =====
+
+A>
+error: cannot find fp entry for FCB at 01c2 fctn 35, FCB named FILESIZEDAT
+TMP     COM d49b
+
+===== READWRITE.COM =====
+
+A>
+File already present.  Aborting
+
+A>
+
+===== USERNUM.COM =====
+
+A>
+FAILED.
+
+A>
+
+#### Failures for iz-cpm
+
+===== DRIVE.COM =====
+
+Bdos Err On I: Bad SectorFAILED.
+
+===== IOPORT.COM =====
+FAILED.
+
+#### Failures for ntvcm
+
+===== DRIVE.COM =====
+FAILED.
+
+===== IOPORT.COM =====
+FAILED.
+
+===== USERNUM.COM =====
+FAILED.
+
+#### Failures for tnylpo
+
+===== AWRITE.COM =====
+
+===== DRIVE.COM =====
+tnylpo: access to invalid/unconfigured disk
+
+===== READWRITE.COM =====
+FAILED.
