@@ -21,3 +21,8 @@ if [ ! -d tnylpo ] ; then
     git clone https://gitlab.com/gbrein/tnylpo.git
     ( cd tnylpo && make )
 fi
+
+if [ ! -d iz-cpm ] ; then
+    git clone https://github.com/ivanizag/iz-cpm.git
+    cd iz-cpm && cargo build
+fi

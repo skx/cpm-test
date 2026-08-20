@@ -23,8 +23,8 @@
 #
 # Print a header
 #
-echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | xx | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
-echo "| ---- | -- | -- | -- |"
+echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
+echo "| ---- | -- | --  | -- | -- |"
 
 #
 # Did running the given command produce "PASSED" in stdout?
@@ -47,7 +47,6 @@ function wasPass {
 # For each test
 #
 for file in *.COM; do
-
 
     #
     # Show the name of the test
@@ -80,6 +79,13 @@ for file in *.COM; do
     #
     # iz-cpm
     #
+    cmd=(./iz-cpm/target/debug/iz-cpm "${file}")
+    if wasPass "${cmd[@]}" ; then
+        printf " ✔️ |"
+    else
+        printf " FAIL |"
+    fi
+
 
     #
     # tnylpo
