@@ -127,3 +127,8 @@ for file in *.COM; do
     rm "tmp.com"
 
 done
+
+#
+# Remove the output file
+#
+rm out.tmp
