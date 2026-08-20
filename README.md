@@ -34,7 +34,6 @@ The tests here, with the exception of [CONOUT.Z80](CONOUT.Z80), are all BDOS tes
 
 
 
-
 # Usage
 
 All the binaries can be executed, in turn, via:
@@ -49,3 +48,36 @@ But by setting `DRIVER` you can execute the tests with any other emulator, for e
   * `make test DRIVER=ntvcm`
 * Iván Izaguirre's [iz-cpm](https://github.com/ivanizag/iz-cpm/):
   * `make test DRIVER=iz-cpm`
+
+You might need to make more effort for other emulators, as they prefer to run with the name of the binary to execute **without** the `.COM` suffix - just like the CP/M CCP.  An example of that is [cpm](https://github.com/jhallen/cpm).
+
+
+
+## Test Results
+
+Tests will change over time, and of course emulators might get updated to add/remove/alter their BIOS and BDOS implementations so these tests are just a point in time record.
+
+That said you can run the tests yourself to receive current results.
+
+* Run `./setup.sh` to clone each emulator from source.
+* Run `./run.sh` to output a markdown table of results.
+
+| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
+| ---- | -- | --  | -- | -- | -- |
+| AWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
+| BDOSVER.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| CONOUT.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| CREATE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| CWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| DELETE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| DRIVE.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
+| FILESIZE.COM |  FAIL | ✔️ | ✔️ | ✔️ | ✔️ |
+| IOPORT.COM |  ✔️ | ✔️ | FAIL| FAIL | ✔️ |
+| RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| RANDREC.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| READWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
+| RENAME.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| SEARCH.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| SETDMA.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| USERNUM.COM |  FAIL | ✔️ | ✔️ | FAIL | ✔️ |
+| WSTRING.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
