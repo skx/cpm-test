@@ -17,6 +17,11 @@ if [ ! -d cpmulator ] ; then
     ( cd cpmulator && go build . )
 fi
 
+if [ ! -d ntvcm ]; then
+    git clone https://github.com/davidly/ntvcm.git
+    ( cd ntvcm && make )
+fi
+
 if [ ! -d tnylpo ] ; then
     git clone https://gitlab.com/gbrein/tnylpo.git
     ( cd tnylpo && make )
@@ -24,5 +29,5 @@ fi
 
 if [ ! -d iz-cpm ] ; then
     git clone https://github.com/ivanizag/iz-cpm.git
-    cd iz-cpm && cargo build
+    ( cd iz-cpm && cargo build )
 fi

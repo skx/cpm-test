@@ -23,11 +23,11 @@
 #
 # Print a header
 #
-echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
-echo "| ---- | -- | --  | -- | -- |"
+echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
+echo "| ---- | -- | --  | -- | -- | -- |"
 
 #
-# Did running the given command produce "PASSED" in stdout?
+# Did running the given command produce "PASSED" on STDOUT?
 #
 # Hide STDERR.
 #
@@ -53,18 +53,23 @@ for file in *.COM; do
     #
     printf "| %s | " "${file}"
 
+    #
+    # Copy the file to "tmp.com"
+    #
+    # Because some emulators prefer lower
+    # names that are short.
+    #
+    cp "${file}" "tmp.com"
 
     #
     # CPM - copy to a lower-cased name, and execute without the ".com" suffix
     #
-    cp "${file}" "tmp.com"
     cmd=(./cpm/cpm --exec tmp)
     if wasPass "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL |"
     fi
-    rm "tmp.com"
 
     #
     # CPMULATOR - keep the name as-is
@@ -76,10 +81,22 @@ for file in *.COM; do
         printf " FAIL |"
     fi
 
+
     #
-    # iz-cpm
+    # iz-cpm - keep the name as-is
     #
     cmd=(./iz-cpm/target/debug/iz-cpm "${file}")
+    if wasPass "${cmd[@]}" ; then
+        printf " ✔️ |"
+    else
+        printf " FAIL|"
+    fi
+
+
+    #
+    # ntvcm - keep the name as-is
+    #
+    cmd=(./ntvcm/ntvcm "${file}")
     if wasPass "${cmd[@]}" ; then
         printf " ✔️ |"
     else
@@ -92,18 +109,21 @@ for file in *.COM; do
     #
     # This wants the filename in lower-case - and without the .com suffix
     #
-    cp "${file}" "tmp.com"
     cmd=(./tnylpo/tnylpo tmp)
     if wasPass "${cmd[@]}" ; then
         printf " ✔️ |"
     else
         printf " FAIL |"
     fi
-    rm "tmp.com"
 
     #
     # End of line
     #
     echo ""
+
+    #
+    # Remove the temporary copy of the test-case
+    #
+    rm "tmp.com"
 
 done
