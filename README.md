@@ -63,7 +63,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 08/20/26
+### Test Results 21/08/26
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -74,7 +74,7 @@ That said you can run the tests yourself to receive current results.
 | CWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | DELETE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | DRIVE.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
-| FILESIZE.COM |  FAIL | ✔️ | ✔️ | ✔️ | ✔️ |
+| FILESIZE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | IOPORT.COM |  ✔️ | ✔️ | FAIL| FAIL | ✔️ |
 | RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RANDREC.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -88,9 +88,7 @@ That said you can run the tests yourself to receive current results.
 #### Failures for cpm
 
 ===== AWRITE.COM =====
-
 A>
-
 A>
 
 Unrecognized BDOS-Function 4:
@@ -144,12 +142,6 @@ A>
 FAILED.
 
 A>
-
-===== FILESIZE.COM =====
-
-A>
-error: cannot find fp entry for FCB at 01c2 fctn 35, FCB named FILESIZEDAT
-TMP     COM d49b
 
 ===== READWRITE.COM =====
 

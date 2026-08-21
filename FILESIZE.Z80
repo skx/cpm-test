@@ -50,6 +50,12 @@ write_loop:
         ld      c, BDOS_FILE_CLOSE
         call    BDOS
 
+        ;; open the file
+        ld      de, filename
+        ld      c, BDOS_FILE_OPEN
+        call    BDOS
+
+
         ;; Reset the extent/current-record fields before asking for
         ;; the file size - see readwrite.z80 for why this matters.
         xor     a
