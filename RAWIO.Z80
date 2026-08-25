@@ -1,0 +1,44 @@
+;; Test that C_RAWIO works as expected.
+
+        org     100h
+
+include header.inc
+
+start:
+        ld      c, BDOS_C_RAWIO
+        ld      e, 'P'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 'A'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 'S'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 'S'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 'E'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 'D'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, '.'
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 0x0a
+        call    BDOS
+
+        ld      c, BDOS_C_RAWIO
+        ld      e, 0x0d
+        call    BDOS
+
+        ret

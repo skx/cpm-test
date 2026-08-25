@@ -4,48 +4,47 @@ This repository contains some simple programs to test CP/M 2.x emulators.  To ea
 
 The following table shows the syscalls which are exercised, note that we exclude system calls relating to reading console/auxiliary input, and those that  refer to tracks, sectors and cylinders.  With the exception of [CONOUT.Z80](CONOUT.Z80) all the test programs are targeted at the CP/M BDOS interface.
 
-
-|  # |	 Hex | BDOS call						   | Test coverage? |
-|---:|------:|-------------------------------------------------------------|----------------|
-|  0 | `00h` | System Reset (`P_TERMCPM`)				   |		    |
-|  1 | `01h` | Console Input (`C_READ`)					   |		    |
-|  2 | `02h` | Console Output (`C_WRITE`)				   | ✔️		    |
-|  3 | `03h` | Auxiliary Input (`A_READ`)				   |		    |
-|  4 | `04h` | Auxiliary Output (`A_WRITE`)				   | ✔️		    |
-|  5 | `05h` | List Output (`L_WRITE`)					   |		    |
-|  6 | `06h` | Direct Console I/O (`C_RAWIO`)				   |		    |
-|  7 | `07h` | Get I/O Byte (`GET_IOBYTE`)				   | ✔️		    |
-|  8 | `08h` | Set I/O Byte (`SET_IOBYTE`)				   | ✔️		    |
-|  9 | `09h` | Print String (`C_WRITESTR`)				   | ✔️		    |
-| 10 | `0Ah` | Read Console Buffer (`C_READSTR`)			   |		    |
-| 11 | `0Bh` | Get Console Status (`C_STAT`)				   |		    |
-| 12 | `0Ch` | Return Version Number (`S_BDOSVER`)			   | ✔️		    |
-| 13 | `0Dh` | Reset Disk System (`DRV_ALLRESET`)			   | ✔️		    |
-| 14 | `0Eh` | Select Disk (`DRV_SET`)					   | ✔️		    |
-| 15 | `0Fh` | Open File (`F_OPEN`)					   | ✔️		    |
-| 16 | `10h` | Close File (`F_CLOSE`)					   | ✔️		    |
-| 17 | `11h` | Search for First (`F_SFIRST`)				   | ✔️		    |
-| 18 | `12h` | Search for Next (`F_SNEXT`)				   | ✔️		    |
-| 19 | `13h` | Delete File (`F_DELETE`)					   | ✔️		    |
-| 20 | `14h` | Read Sequential (`F_READ`)				   | ✔️		    |
-| 21 | `15h` | Write Sequential (`F_WRITE`)				   | ✔️		    |
-| 22 | `16h` | Make File (`F_MAKE`)					   | ✔️		    |
-| 23 | `17h` | Rename File (`F_RENAME`)					   | ✔️		    |
-| 24 | `18h` | Return Login Vector (`DRV_LOGIN`)			   | ✔️		    |
-| 25 | `19h` | Return Current Disk (`DRV_GET`)				   | ✔️		    |
-| 26 | `1Ah` | Set DMA Address (`F_DMAOFF`)				   | ✔️		    |
-| 27 | `1Bh` | Get Allocation Address / Allocation Vector (`DRV_GETALLOC`) |		    |
-| 28 | `1Ch` | Write Protect Disk (`DRV_SETRO`)				   |		    |
-| 29 | `1Dh` | Get Read-Only Vector (`DRV_GETRO`)			   |		    |
-| 30 | `1Eh` | Set File Attributes (`F_SETATT`)				   |		    |
-| 31 | `1Fh` | Get Disk Parameter Block Address (`DRV_GETDPB`)		   |		    |
-| 32 | `20h` | Set/Get User Code (`GET_SET_USER`)			   | ✔️		    |
-| 33 | `21h` | Read Random (`F_RREAD`)					   | ✔️		    |
-| 34 | `22h` | Write Random (`F_RWRITE`)				   | ✔️		    |
-| 35 | `23h` | Compute File Size (`F_SIZE`)				   | ✔️		    |
-| 36 | `24h` | Set/Update Random Record (`F_RANDREC`)			   | ✔️		    |
-| 37 | `25h` | Reset Drive (`DRV_RESET`)				   |		    |
-| 40 | `28h` | Write Random with Zero Fill (`F_WRITEZF`)		   |		    |
+| #  | Hex   | BDOS call                                                   | Test coverage? |
+| -: | ----: | ----------------------------------------------------------- | -------------- |
+| 0  | `00h` | System Reset (`P_TERMCPM`)                                  |                |
+| 1  | `01h` | Console Input (`C_READ`)                                    |                |
+| 2  | `02h` | Console Output (`C_WRITE`)                                  | ✔️             |
+| 3  | `03h` | Auxiliary Input (`A_READ`)                                  |                |
+| 4  | `04h` | Auxiliary Output (`A_WRITE`)                                | ✔️             |
+| 5  | `05h` | List Output (`L_WRITE`)                                     |                |
+| 6  | `06h` | Direct Console I/O (`C_RAWIO`)                              | ✔️             |
+| 7  | `07h` | Get I/O Byte (`GET_IOBYTE`)                                 | ✔️             |
+| 8  | `08h` | Set I/O Byte (`SET_IOBYTE`)                                 | ✔️             |
+| 9  | `09h` | Print String (`C_WRITESTR`)                                 | ✔️             |
+| 10 | `0Ah` | Read Console Buffer (`C_READSTR`)                           |                |
+| 11 | `0Bh` | Get Console Status (`C_STAT`)                               |                |
+| 12 | `0Ch` | Return Version Number (`S_BDOSVER`)                         | ✔️             |
+| 13 | `0Dh` | Reset Disk System (`DRV_ALLRESET`)                          | ✔️             |
+| 14 | `0Eh` | Select Disk (`DRV_SET`)                                     | ✔️             |
+| 15 | `0Fh` | Open File (`F_OPEN`)                                        | ✔️             |
+| 16 | `10h` | Close File (`F_CLOSE`)                                      | ✔️             |
+| 17 | `11h` | Search for First (`F_SFIRST`)                               | ✔️             |
+| 18 | `12h` | Search for Next (`F_SNEXT`)                                 | ✔️             |
+| 19 | `13h` | Delete File (`F_DELETE`)                                    | ✔️             |
+| 20 | `14h` | Read Sequential (`F_READ`)                                  | ✔️             |
+| 21 | `15h` | Write Sequential (`F_WRITE`)                                | ✔️             |
+| 22 | `16h` | Make File (`F_MAKE`)                                        | ✔️             |
+| 23 | `17h` | Rename File (`F_RENAME`)                                    | ✔️             |
+| 24 | `18h` | Return Login Vector (`DRV_LOGIN`)                           | ✔️             |
+| 25 | `19h` | Return Current Disk (`DRV_GET`)                             | ✔️             |
+| 26 | `1Ah` | Set DMA Address (`F_DMAOFF`)                                | ✔️             |
+| 27 | `1Bh` | Get Allocation Address / Allocation Vector (`DRV_GETALLOC`) |                |
+| 28 | `1Ch` | Write Protect Disk (`DRV_SETRO`)                            |                |
+| 29 | `1Dh` | Get Read-Only Vector (`DRV_GETRO`)                          |                |
+| 30 | `1Eh` | Set File Attributes (`F_SETATT`)                            |                |
+| 31 | `1Fh` | Get Disk Parameter Block Address (`DRV_GETDPB`)             |                |
+| 32 | `20h` | Set/Get User Code (`GET_SET_USER`)                          | ✔️             |
+| 33 | `21h` | Read Random (`F_RREAD`)                                     | ✔️             |
+| 34 | `22h` | Write Random (`F_RWRITE`)                                   | ✔️             |
+| 35 | `23h` | Compute File Size (`F_SIZE`)                                | ✔️             |
+| 36 | `24h` | Set/Update Random Record (`F_RANDREC`)                      | ✔️             |
+| 37 | `25h` | Reset Drive (`DRV_RESET`)                                   |                |
+| 40 | `28h` | Write Random with Zero Fill (`F_WRITEZF`)                   |                |
 
 
 
@@ -105,7 +104,8 @@ That said you can run the tests yourself to receive current results.
 | LOGVEC.COM |	FAIL | ✔️ | ✔️ | FAIL | FAIL |
 | RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RANDREC.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| READWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
+| RAWIO.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| READWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | FAIL |
 | RENAME.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SEARCH.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SETDMA.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -176,13 +176,6 @@ A>
 
 A>
 FAILED.
-
-A>
-
-===== READWRITE.COM =====
-
-A>
-File already present.  Aborting
 
 A>
 
