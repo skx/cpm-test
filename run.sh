@@ -56,8 +56,10 @@ wasPass() {
         return 0
     else
         {
+            # Show the first ten lines of output
+            # strip blank lines.
             echo "===== ${test} ====="
-            cat out.tmp
+            sed -r '/^\s*$/d' < out.tmp | head -n 10
             echo
         } >> "failures.${emulator}"
 
