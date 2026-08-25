@@ -31,11 +31,11 @@ The following table shows the syscalls which are exercised, note that we exclude
 | 21 | `15h` | Write Sequential (`F_WRITE`)                                | ✔️              |
 | 22 | `16h` | Make File (`F_MAKE`)                                        | ✔️              |
 | 23 | `17h` | Rename File (`F_RENAME`)                                    | ✔️              |
-| 24 | `18h` | Return Login Vector (`DRV_LOGIN`)                           |                |
+| 24 | `18h` | Return Login Vector (`DRV_LOGIN`)                           | ✔️              |
 | 25 | `19h` | Return Current Disk (`DRV_GET`)                             | ✔️              |
 | 26 | `1Ah` | Set DMA Address (`F_DMAOFF`)                                | ✔️              |
 | 27 | `1Bh` | Get Allocation Address / Allocation Vector (`DRV_GETALLOC`) |                |
- | 28 | `1Ch` | Write Protect Disk (`DRV_SETRO`)                            |                |
+| 28 | `1Ch` | Write Protect Disk (`DRV_SETRO`)                            |                |
 | 29 | `1Dh` | Get Read-Only Vector (`DRV_GETRO`)                          |                |
 | 30 | `1Eh` | Set File Attributes (`F_SETATT`)                            |                |
 | 31 | `1Fh` | Get Disk Parameter Block Address (`DRV_GETDPB`)             |                |
