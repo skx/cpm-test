@@ -32,7 +32,7 @@ done
 #
 # Print a header
 #
-echo "### Test Results $(date +%D)"
+echo "### Test Results $(date +%d/%M/%Y)"
 echo ""
 echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
 echo "| ---- | -- | --  | -- | -- | -- |"
@@ -131,7 +131,7 @@ for file in *.COM; do
     #
     # This wants the filename in lower-case - and without the .com suffix
     #
-    cmd=(./tnylpo/tnylpo tmp)
+    cmd=(./tnylpo/tnylpo -f .tnylpo.conf tmp)
     if wasPass "tnylpo" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
