@@ -8,6 +8,7 @@ BDOS    equ     0005h
 ;;
 BDOS_C_WRITE         equ     2
 BDOS_A_WRITE         equ     4
+BDOS_C_RAWIO         equ     6
 BDOS_GET_IOBYTE      equ     7
 BDOS_SET_IOBYTE      equ     8
 BDOS_C_WRITESTR      equ     9
