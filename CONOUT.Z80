@@ -1,4 +1,4 @@
-;; Test that BIOS CONOUTworks as expected.
+;; Test that BIOS CONOUT works as expected.
 
         org     100h
 
