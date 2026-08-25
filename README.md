@@ -89,7 +89,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 08/24/26
+### Test Results 08/25/26
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -102,9 +102,10 @@ That said you can run the tests yourself to receive current results.
 | DRIVE.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
 | FILESIZE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | IOPORT.COM |  ✔️ | ✔️ | FAIL| FAIL | ✔️ |
+| LOGVEC.COM |  FAIL | FAIL | ✔️ | FAIL | FAIL |
 | RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RANDREC.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| READWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | FAIL |
+| READWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
 | RENAME.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SEARCH.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SETDMA.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -115,7 +116,7 @@ That said you can run the tests yourself to receive current results.
 
 ===== AWRITE.COM =====
 
-A>  
+A>
 
 A>
 
@@ -162,21 +163,40 @@ Stack =  138 db69 d588 4f43  14d 2424 2024 2020
 Unrecognized BDOS-Function 4:
 AF=0044  BC=0004  DE=000d  HL=d659  SP=d471
 Stack =  13f db69 d588 4f43  14d 2424 2024 2020
-  
+
 
 ===== DRIVE.COM =====
 
-A>  
+A>
 FAILED.
-
-A>  
+
+A>
+
+===== LOGVEC.COM =====
+
+A>
+FAILED.
+
+A>
+
+===== READWRITE.COM =====
+
+A>
+File already present.  Aborting
+
+A>
 
 ===== USERNUM.COM =====
 
-A>  
+A>
 FAILED.
-
-A>  
+
+A>
+
+#### Failures for cpmulator
+
+===== LOGVEC.COM =====
+FAILED.
 
 #### Failures for iz-cpm
 
@@ -187,7 +207,6 @@ Bdos Err On I: Bad SectorFAILED.
 ===== IOPORT.COM =====
 FAILED.
 
-
 #### Failures for ntvcm
 
 ===== DRIVE.COM =====
@@ -196,9 +215,11 @@ FAILED.
 ===== IOPORT.COM =====
 FAILED.
 
-===== USERNUM.COM =====
+===== LOGVEC.COM =====
 FAILED.
 
+===== USERNUM.COM =====
+FAILED.
 
 #### Failures for tnylpo
 
@@ -207,6 +228,8 @@ FAILED.
 ===== DRIVE.COM =====
 tnylpo: access to invalid/unconfigured disk
 
-===== READWRITE.COM =====
+===== LOGVEC.COM =====
 FAILED.
 
+===== READWRITE.COM =====
+FAILED.
