@@ -114,73 +114,118 @@ That said you can run the tests yourself to receive current results.
 
 #### Failures for cpm
 
+```
 ===== AWRITE.COM =====
+
 A>
+
 A>
+
 Unrecognized BDOS-Function 4:
 AF=0044	 BC=0004  DE=0050  HL=d659  SP=d471
 Stack =	 107 db69 d588 4f43  14d 2424 2024 2020
+
+
 Unrecognized BDOS-Function 4:
 AF=0044	 BC=0004  DE=0041  HL=d659  SP=d471
 Stack =	 10e db69 d588 4f43  14d 2424 2024 2020
+
+
 Unrecognized BDOS-Function 4:
 AF=0044	 BC=0004  DE=0053  HL=d659  SP=d471
+Stack =	 115 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044	 BC=0004  DE=0053  HL=d659  SP=d471
+Stack =	 11c db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044	 BC=0004  DE=0045  HL=d659  SP=d471
+Stack =	 123 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044	 BC=0004  DE=0044  HL=d659  SP=d471
+Stack =	 12a db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044	 BC=0004  DE=002e  HL=d659  SP=d471
+Stack =	 131 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044	 BC=0004  DE=000a  HL=d659  SP=d471
+Stack =	 138 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 4:
+AF=0044	 BC=0004  DE=000d  HL=d659  SP=d471
+Stack =	 13f db69 d588 4f43  14d 2424 2024 2020
 
 ===== DRIVE.COM =====
+
 A>
 FAILED.
-A>
 
+A>
 ===== LOGVEC.COM =====
+
 A>
 FAILED.
-A>
 
+A>
 ===== READWRITE.COM =====
+
 A>
 File already present.  Aborting
-A>
 
+A>
 ===== USERNUM.COM =====
+
 A>
 FAILED.
+
 A>
+```
 
 
 #### Failures for iz-cpm
 
+```
 ===== DRIVE.COM =====
-Bdos Err On I: Bad SectorFAILED.
 
+Bdos Err On I: Bad SectorFAILED.
 ===== IOPORT.COM =====
 FAILED.
+```
 
 
 #### Failures for ntvcm
 
+```
 ===== DRIVE.COM =====
 FAILED.
-
 ===== IOPORT.COM =====
 FAILED.
-
 ===== LOGVEC.COM =====
 FAILED.
-
 ===== USERNUM.COM =====
 FAILED.
+```
 
 
 #### Failures for tnylpo
 
+```
 ===== AWRITE.COM =====
-
 ===== DRIVE.COM =====
 tnylpo: access to invalid/unconfigured disk
-
 ===== LOGVEC.COM =====
 FAILED.
-
 ===== READWRITE.COM =====
 FAILED.
+```
 

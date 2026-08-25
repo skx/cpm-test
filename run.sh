@@ -56,11 +56,8 @@ wasPass() {
         return 0
     else
         {
-            # Show the first ten lines of output
-            # strip blank lines.
             echo "===== ${test} ====="
-            sed -r '/^\s*$/d' < out.tmp | head -n 10
-            echo
+            cat out.tmp
         } >> "failures.${emulator}"
 
         return 1
@@ -160,7 +157,10 @@ for emulator in "${emulators[@]}"; do
         echo
         echo "#### Failures for ${emulator}"
         echo
+        echo "\`\`\`"
         cat "failures.${emulator}"
+        echo "\`\`\`"
+        echo
     fi
 done
 
