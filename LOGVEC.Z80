@@ -1,0 +1,87 @@
+;; Test that BDOS_DRV_LOGVEC works as expected.
+;;
+;; Reset the disk system, confirm drive B isn't reported as logged
+;; in, select it, confirm it now is, then reset again and confirm
+;; it's gone from the vector.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remember the current drive, so it can be restored.
+        ld      c, BDOS_DRV_GET
+        call    BDOS
+        ld      (original_drive), a
+
+        ;; Start from a known state.
+        ld      c, BDOS_DRV_ALLRESET
+        call    BDOS
+
+        ;; Drive B shouldn't be logged in yet.
+        ld      c, BDOS_DRV_LOGVEC
+        call    BDOS
+        ld      a, l
+        and     0x02        ; A -> 0b000...01, B -> 0b000010.
+        jr      nz, failed
+
+        ;; Selecting drive B references it, which should log it in.
+        ld      e, 1
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      c, BDOS_DRV_LOGVEC
+        call    BDOS
+        ld      a, l
+        and     0x02
+        jr      z, failed
+
+        ;; Resetting the disk system should clear it again.
+        ld      c, BDOS_DRV_ALLRESET
+        call    BDOS
+
+        ld      c, BDOS_DRV_LOGVEC
+        call    BDOS
+        ld      a, l
+        and     0x02
+        jr      nz, failed
+
+        ;; Our emulators should however default to A: being enabled.
+        ld      a, l
+        and     0x01
+        jr      z, failed
+
+        ;; show succes
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; reset to starting state
+        jr     reset_exit
+
+failed:
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; restore the original drive
+reset_exit:
+        ld      a, (original_drive)
+        ld      e, a
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ;; terminate
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+original_drive:
+        db      0

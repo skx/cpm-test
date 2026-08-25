@@ -23,6 +23,7 @@ BDOS_FILE_READ       equ     20
 BDOS_FILE_WRITE      equ     21
 BDOS_FILE_CREATE     equ     22
 BDOS_FILE_RENAME     equ     23
+BDOS_DRV_LOGVEC      equ     24
 BDOS_DRV_GET         equ     25
 BDOS_SET_DMA         equ     26
 BDOS_GET_SET_USER    equ     32
