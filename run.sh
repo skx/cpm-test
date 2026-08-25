@@ -32,7 +32,7 @@ done
 #
 # Print a header
 #
-echo "### Test Results $(date +%d/%M/%Y)"
+echo "### Test Results $(date +%d/%m/%Y)"
 echo ""
 echo "| Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)"
 echo "| ---- | -- | --  | -- | -- | -- |"

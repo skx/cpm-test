@@ -47,6 +47,15 @@ test-all:
 	@make test DRIVER=ntvcm
 
 
+# Run the tests, update README.md with the results
+updates-tests:
+	./setup.sh
+	./run.sh | col -b | tee results.md
+	sed -i '/^### Test Results/,$$d' README.md
+	cat results.md >> README.md
+	rm results.md
+
+
 # Assemble .z80 -> .com
 %.COM: %.Z80
 	$(PASMO) $< $@
