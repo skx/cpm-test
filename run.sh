@@ -131,7 +131,7 @@ for file in *.COM; do
     #
     # This wants the filename in lower-case - and without the .com suffix
     #
-    cmd=(./tnylpo/tnylpo tmp)
+    cmd=(./tnylpo/tnylpo -f .tnylpo.conf tmp)
     if wasPass "tnylpo" "${file}" "${cmd[@]}" ; then
         printf " ✔️ |"
     else
