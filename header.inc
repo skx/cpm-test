@@ -27,8 +27,12 @@ BDOS_FILE_RENAME     equ     23
 BDOS_DRV_LOGVEC      equ     24
 BDOS_DRV_GET         equ     25
 BDOS_SET_DMA         equ     26
+BDOS_DRV_SETRO       equ     28
+BDOS_DRV_GETRO       equ     29
 BDOS_GET_SET_USER    equ     32
 BDOS_RANDOM_READ     equ     33
 BDOS_RANDOM_WRITE    equ     34
 BDOS_COMPUTE_FILESZ  equ     35
 BDOS_RANDREC         equ     36
+BDOS_DRV_RESET       equ     37
+BDOS_WRITEZF         equ     40

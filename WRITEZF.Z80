@@ -1,0 +1,164 @@
+;; Test that BDOS_WRITEZF (F_WRITEZF, "write random with zero fill")
+;; works as expected.
+;;
+;; Create a new file and, via a single random write, populate a record
+;; that lives part-way through the first allocation block.  That write
+;; allocates the whole block, but only touches the one record - so the
+;; other records sharing that block have never been explicitly written.
+;;
+;; Confirm the padded space is 100% zero-filled.
+;;
+
+        org     100h
+
+include header.inc
+
+DMA:                  EQU 0x80
+DMA_LEN:              EQU 128
+WRITE_RECORD:         EQU 4           ; shares block 0 with record 0 on any BLS
+FILL_BYTE:            EQU 0x55
+
+
+start:
+        ;; delete file if already exists
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; file shouldn't exist
+        ld      de, filename
+        call    file_exists
+        jp      z, already_present
+
+        ;; create the file
+        ld      de, filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; Fill the DMA buffer with a byte that can't be confused with
+        ;; a zero-filled record.
+        ld      hl, DMA
+        ld      b, DMA_LEN
+        ld      a, FILL_BYTE
+fill_loop:
+        ld      (hl), a
+        inc     hl
+        djnz    fill_loop
+
+        ;; Write record WRITE_RECORD via F_WRITEZF.
+        xor     a
+        ld      (filename+34), a        ; random record, middle byte
+        ld      (filename+35), a        ; random record, high byte
+        ld      a, WRITE_RECORD
+        ld      (filename+33), a        ; random record, low byte
+
+        ld      de, filename
+        ld      c, BDOS_WRITEZF
+        call    BDOS
+        or      a
+        jp      nz, failed
+
+        ;; Confirm the record we wrote reads back with our fill byte.
+        ld      a, WRITE_RECORD
+        ld      (rec_num), a
+        call    random_read_check
+        jp      nz, failed
+
+        ld      hl, DMA
+        ld      b, DMA_LEN
+        ld      a, FILL_BYTE
+check_written:
+        cp      (hl)
+        jp      nz, failed
+        inc     hl
+        djnz    check_written
+
+        ;; Confirm record 0 - part of the same, newly-allocated block,
+        ;; but never explicitly written - reads back as all zero bytes.
+        xor     a
+        ld      (rec_num), a
+        call    random_read_check
+        jp      nz, failed
+
+        ld      hl, DMA
+        ld      b, DMA_LEN
+check_zero:
+        ld      a, (hl)
+        or      a
+        jp      nz, failed
+        inc     hl
+        djnz    check_zero
+
+        ;; clean up
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+;; Randomly-read the record number held in `rec_num` into DMA.
+;; Returns with the zero flag set on success (BDOS reported no error).
+random_read_check:
+        ld      a, (rec_num)
+        ld      (filename+33), a        ; random record, low byte
+        xor     a
+        ld      (filename+34), a        ; random record, middle byte
+        ld      (filename+35), a        ; random record, high byte
+
+        ld      de, filename
+        ld      c, BDOS_RANDOM_READ
+        call    BDOS
+        or      a
+        ret
+
+
+already_present:
+        ld      de, already_exists_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+failed:
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        ret
+
+
+already_exists_msg:
+        db      "File already present.  Aborting"
+        db      0x0a, 0x0d, "$"
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+rec_num:
+        db      0
+
+;; The FCB record for the file we'll write to, and read from.
+filename:
+        db      0
+        db      "WRITEZF "
+        db      "DAT"
+        ds      24,0
+
+include common.inc

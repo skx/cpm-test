@@ -1,0 +1,116 @@
+;; Test that BDOS_DRV_SETRO / BDOS_DRV_GETRO work as expected.
+;;
+;; Confirm that no drives are read-only after a reset, mark a couple
+;; of drives read-only and confirm the read-only vector reflects
+;; that, confirm the setting persists across selecting other drives,
+;; then confirm that resetting the disk system clears the read-only
+;; flags again.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Remember the current drive, so it can be restored.
+        ld      c, BDOS_DRV_GET
+        call    BDOS
+        ld      (original_drive), a
+
+        ;; Start from a known state: nothing should be read-only.
+        ld      c, BDOS_DRV_ALLRESET
+        call    BDOS
+
+        ld      c, BDOS_DRV_GETRO
+        call    BDOS
+        ld      a, l
+        or      h
+        jr      nz, failed
+
+        ;; Select drive B, and mark it read-only.
+        ld      e, 1
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      c, BDOS_DRV_SETRO
+        call    BDOS
+
+        ;; Select drive C, and mark it read-only too.
+        ld      e, 2
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      c, BDOS_DRV_SETRO
+        call    BDOS
+
+        ;; B and C should now show as read-only: 0b0000_0110.
+        ld      c, BDOS_DRV_GETRO
+        call    BDOS
+        ld      a, l
+        and     0x06
+        cp      0x06
+        jr      nz, failed
+
+        ;; ... and nothing else should be.
+        ld      a, l
+        and     0xf9            ; ~0x06, masked to a byte.
+        jr      nz, failed
+        ld      a, h
+        or      a
+        jr      nz, failed
+
+        ;; Selecting a different drive shouldn't clear the setting.
+        ld      e, 0
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+
+        ld      c, BDOS_DRV_GETRO
+        call    BDOS
+        ld      a, l
+        and     0x06
+        cp      0x06
+        jr      nz, failed
+
+        ;; Resetting all drives should clear all read-only flags.
+        ld      c, BDOS_DRV_RESET
+        ld      de, 0xFFFF
+        call    BDOS
+
+        ld      c, BDOS_DRV_GETRO
+        call    BDOS
+        ld      a, l
+        or      h
+        jr      nz, failed
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+        jr      reset_exit
+
+failed:
+        ld      de, failed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; Make sure we don't leave read-only drives behind.
+        ld      c, BDOS_DRV_ALLRESET
+        call    BDOS
+
+reset_exit:
+        ;; restore the original drive
+        ld      a, (original_drive)
+        ld      e, a
+        ld      c, BDOS_DRV_SET
+        call    BDOS
+        ret
+
+
+passed_msg:
+        db      "PASSED."
+        db      0x0a, 0x0d, "$"
+
+failed_msg:
+        db      "FAILED."
+        db      0x0a, 0x0d, "$"
+
+original_drive:
+        db      0
