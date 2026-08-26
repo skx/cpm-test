@@ -60,18 +60,18 @@ So a failure to run these examples does **not** mean a particular emulator is br
 
 # Usage
 
-All the binaries can be executed, in turn, via:
+Using the supplied `Makefile` each of the tests can be executed in turn via:
 
     make test
 
-This will default to executing them with my own emulator, [cpmulator](https://github.com/skx/cpmulator/), by using `cpmulator -input=stty $BINARY` as the execution method.  If you want to run the tests with another driver set `DRIVER` when you execute `make`.
-
-For example:
+This will default to running them with my own emulator, [cpmulator](https://github.com/skx/cpmulator/), by executing `cpmulator -input=stty $BINARY`.  If you want to run the tests with another driver set `DRIVER` when you execute `make` - the expectation is that this will be a complete command-line to which the name of a binary will be added, for example:
 
 * David Lee's [ntvcm](https://github.com/davidly/ntvcm/):
   * `make test DRIVER=ntvcm`
+  * Which then executes `ntvcm $BINARY`.
 * Iván Izaguirre's [iz-cpm](https://github.com/ivanizag/iz-cpm/):
   * `make test DRIVER=iz-cpm`
+  * Which then executes `iz-cpm $BINARY`.
 
 You might need to make more effort for other emulators, as some emulators insist the name of the binary to execute is specified **without** the `.COM` suffix - just like the CP/M CCP.	 An example of that is [cpm](https://github.com/jhallen/cpm).
 
@@ -84,6 +84,7 @@ Tests will change over time, and of course emulators might get updated to add/re
 That said you can run the tests yourself to receive current results.
 
 * Run `./setup.sh` to clone each emulator from source.
+  * If the repository is already present it will be updated via `git pull`.
   * You'll need a rust compiler, a golang toolchain, and a C and C++ compiler to compile all the emulators.
 * Run `./run.sh` to output a markdown table of results.
 
@@ -221,7 +222,6 @@ FAILED.
 A>
 ```
 
-
 #### Failures for iz-cpm
 
 ```
@@ -244,7 +244,6 @@ Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector```
 
-
 #### Failures for ntvcm
 
 ```
@@ -263,7 +262,6 @@ FAILED.
 FAILED.
 ```
 
-
 #### Failures for tnylpo
 
 ```
@@ -277,4 +275,3 @@ FAILED.
 ===== RO2.COM =====
 tnylpo: attempted write access to read-only disk
 ```
-
