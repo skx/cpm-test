@@ -34,8 +34,8 @@ The following table shows the syscalls which are exercised, note that we exclude
 | 25 | `19h` | Return Current Disk (`DRV_GET`)                             | ✔️             |
 | 26 | `1Ah` | Set DMA Address (`F_DMAOFF`)                                | ✔️             |
 | 27 | `1Bh` | Get Allocation Address / Allocation Vector (`DRV_GETALLOC`) |                |
-| 28 | `1Ch` | Write Protect Disk (`DRV_SETRO`)                            |                |
-| 29 | `1Dh` | Get Read-Only Vector (`DRV_GETRO`)                          |                |
+| 28 | `1Ch` | Write Protect Disk (`DRV_SETRO`)                            | ✔️           |
+| 29 | `1Dh` | Get Read-Only Vector (`DRV_GETRO`)                          | ✔️             |
 | 30 | `1Eh` | Set File Attributes (`F_SETATT`)                            |                |
 | 31 | `1Fh` | Get Disk Parameter Block Address (`DRV_GETDPB`)             |                |
 | 32 | `20h` | Set/Get User Code (`GET_SET_USER`)                          | ✔️             |
@@ -43,8 +43,8 @@ The following table shows the syscalls which are exercised, note that we exclude
 | 34 | `22h` | Write Random (`F_RWRITE`)                                   | ✔️             |
 | 35 | `23h` | Compute File Size (`F_SIZE`)                                | ✔️             |
 | 36 | `24h` | Set/Update Random Record (`F_RANDREC`)                      | ✔️             |
-| 37 | `25h` | Reset Drive (`DRV_RESET`)                                   |                |
-| 40 | `28h` | Write Random with Zero Fill (`F_WRITEZF`)                   |                |
+| 37 | `25h` | Reset Drive (`DRV_RESET`)                                   | ✔️             |
+| 40 | `28h` | Write Random with Zero Fill (`F_WRITEZF`)                   | ✔️             |
 
 
 
@@ -88,7 +88,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 25/08/2026
+### Test Results 26/08/2026
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -107,9 +107,12 @@ That said you can run the tests yourself to receive current results.
 | RAWIO.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | READWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
 | RENAME.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| RO1.COM |  FAIL | ✔️ | ✔️ | FAIL | ✔️ |
+| RO2.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
 | SEARCH.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SETDMA.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | USERNUM.COM |	 FAIL | ✔️ | ✔️ | FAIL | ✔️ |
+| WRITEZF.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | WSTRING.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 #### Failures for cpm
@@ -183,6 +186,33 @@ A>
 File already present.  Aborting
 
 A>
+===== RO1.COM =====
+
+A>
+FAILED.
+
+A>
+
+Unrecognized BDOS-Function 28:
+AF=0044	 BC=001c  DE=0001  HL=0000  SP=d471
+Stack =	 122 db69 d588 4f43  14d 2424 2024 2020
+
+
+Unrecognized BDOS-Function 28:
+AF=0044	 BC=001c  DE=0002  HL=0000  SP=d471
+Stack =	 12e db69 d588 4f43  14d 2424 2024 2020
+
+===== RO2.COM =====
+
+A>
+FAILED.
+
+A>
+
+Unrecognized BDOS-Function 28:
+AF=0042	 BC=001c  DE=0264  HL=0000  SP=d471
+Stack =	 175 db69 d588 4f43  14d 2424 2024 2020
+
 ===== USERNUM.COM =====
 
 A>
@@ -200,7 +230,19 @@ A>
 Bdos Err On I: Bad SectorFAILED.
 ===== IOPORT.COM =====
 FAILED.
-```
+===== RO2.COM =====
+
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad SectorFAILED.
+
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector```
 
 
 #### Failures for ntvcm
@@ -211,6 +253,11 @@ FAILED.
 ===== IOPORT.COM =====
 FAILED.
 ===== LOGVEC.COM =====
+FAILED.
+===== RO1.COM =====
+FAILED.
+===== RO2.COM =====
+unhandled BDOS FUNCTION!!!!!!!!!!!!!!!: 28 = 0x1c
 FAILED.
 ===== USERNUM.COM =====
 FAILED.
@@ -227,5 +274,7 @@ tnylpo: access to invalid/unconfigured disk
 FAILED.
 ===== READWRITE.COM =====
 FAILED.
+===== RO2.COM =====
+tnylpo: attempted write access to read-only disk
 ```
 
