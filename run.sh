@@ -159,6 +159,7 @@ for emulator in "${emulators[@]}"; do
         echo
         echo "\`\`\`"
         cat "failures.${emulator}"
+        echo
         echo "\`\`\`"
         echo
     fi

@@ -89,7 +89,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 26/08/2026
+### Test Results 27/08/2026
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -220,7 +220,9 @@ A>
 FAILED.
 
 A>
+
 ```
+
 
 #### Failures for iz-cpm
 
@@ -242,7 +244,9 @@ Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector```
+Bdos Err On B: Bad Sector
+```
+
 
 #### Failures for ntvcm
 
@@ -260,7 +264,9 @@ unhandled BDOS FUNCTION!!!!!!!!!!!!!!!: 28 = 0x1c
 FAILED.
 ===== USERNUM.COM =====
 FAILED.
+
 ```
+
 
 #### Failures for tnylpo
 
@@ -274,4 +280,6 @@ FAILED.
 FAILED.
 ===== RO2.COM =====
 tnylpo: attempted write access to read-only disk
+
 ```
+
