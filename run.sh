@@ -69,6 +69,11 @@ wasPass() {
 #
 for file in *.COM; do
 
+    # TICKER.COM is special and should be skipped.
+    if [[ "${file}" = "TICKER.COM" ]]; then
+        continue
+    fi
+
     #
     # Show the name of the test
     #

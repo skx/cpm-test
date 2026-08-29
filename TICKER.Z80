@@ -1,0 +1,141 @@
+;; TICKER - Assume we have interrupts, use them to output a message.
+;;
+;; Setup an ISR to be called by IM2, and each time that is called output
+;; a single byte to the console.
+;;
+;; When we reach the end of the message disable the interrupt mode.
+;;
+;; Busy-loop is unfortunate, but a consequence of the fact we terminate
+;; execution when we see HLT.
+;;
+
+        org     100h
+
+
+
+;; Refresher on Z80 interupts:
+;;
+;;   Disabled: No ints.
+;;
+;;   Mode 1: Jump to 0x38 every interrupt; not great to mix with CP/M.
+;;
+;;   Mode 2: Jump to address made of I-register, and data-byte from bus. In our
+;;           case we know that will always be 0x00, but we pretend it could be
+;;           any of the possible values.
+;;           Which would mean a jump to 0x05NN for device/value 0xNN.
+;;
+
+;; Jump table address.
+IVEC_TABLE:     EQU     0x0500
+
+;; High-byte, low byte comes from the bus.
+IVEC_HIGH:      EQU     0x05
+
+
+
+start:
+        ;; Rewrite our handler so we can call conout.
+        ld      hl, (0x0001)
+        dec     hl
+        dec     hl
+        dec     hl
+        ld      de, 12
+        add     hl, de
+        ld      (conout+1), hl
+
+        ;; Fill every one of the 128 possible vector-table slots with the address of our handler
+        ld      hl, IVEC_TABLE
+        ld      de, isr
+        ld      b, 128
+build_table:
+        ld      (hl), e
+        inc     hl
+        ld      (hl), d
+        inc     hl
+        djnz    build_table
+
+        ;; Point I at the vector table, enable interrupt mode 2, and go.
+        ld      a, IVEC_HIGH
+        ld      i, a
+        im      2
+        ei
+
+        ;;
+        ;; At this point we have a clock firing the interrupts regularly.
+        ;;
+        ;; Each time an interrupt is raised a character will be printed to the console.
+        ;;
+        ;; Once the full message has been spat out the "done" flag will say we're over.
+        ;;
+
+        ;;
+        ;; Busy-wait on the completion marker, and then exit.
+        ;;
+wait_loop:
+        ld      a, (done)
+        or      a
+        jr      z, wait_loop
+
+        ;; Return to CP/M
+        ret
+
+
+;; The interrupt service routine.
+isr:
+        ;; Switch to alternate registers.
+        ;;
+        ;; CP/M never uses these so it's easier than PUSH/POP
+        ex af, af'
+
+        ;; Get the address of our message byte
+        ld      hl, (msg_ptr)
+
+        ;; And the next character to print.
+        ld      a, (hl)
+
+        ;; End of the message?
+        cp      0
+        jr      z, isr_over
+
+        ;; Bump to next character for the next call.
+        inc     hl
+        ld      (msg_ptr), hl
+
+        ;; print the character
+        ld      c, a
+        call    conout
+
+        ;; Reenable interrupts for the next character in the future.
+        ei
+
+isr_return:
+        ;; back to normal.
+        ex      af, af'
+        reti
+
+isr_over:
+        ;; Disable interrupts, and mark ourselves as being complete.
+        di
+        ld      a, 1
+        ld      (done), a
+        jr      isr_return
+
+
+
+;; Jump to the conout handler; this address is modified at startup.
+conout:
+        jp      0x0000
+
+;; Message we're going to print
+message:
+        db "PASSED."
+        db 0x0a, 0x0d
+        db 0x00
+
+;; The pointer to the character to print
+msg_ptr:
+        dw message
+
+;; Main code will busy-wait on this being non-zero.
+done:
+        db      0
