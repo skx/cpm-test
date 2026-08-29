@@ -57,6 +57,16 @@ So a failure to run these examples does **not** mean a particular emulator is br
 
 
 
+## Extra Tests
+
+This repository is supposed to handle CP/M (BDOS) code, but I added an extra test which relies upon a clock-interrupt being generated.  Real systems would have had this, and so it's a good test.  This is skipped in the "scoring" tables:
+
+* [TICKER.Z80](TICKER.Z80) - Use interrupts to output a message.
+
+I'd be happy to accept additional "extra" tests, as long as they're related to CP/M on a Z80 system.
+
+
+
 
 # Usage
 
@@ -89,7 +99,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 27/08/2026
+### Test Results 29/08/2026
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -106,7 +116,7 @@ That said you can run the tests yourself to receive current results.
 | RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RANDREC.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RAWIO.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| READWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
+| READWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | FAIL |
 | RENAME.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RO1.COM |  FAIL | ✔️ | ✔️ | FAIL | ✔️ |
 | RO2.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
@@ -181,12 +191,6 @@ A>
 FAILED.
 
 A>
-===== READWRITE.COM =====
-
-A>
-File already present.  Aborting
-
-A>
 ===== RO1.COM =====
 
 A>
@@ -223,7 +227,6 @@ A>
 
 ```
 
-
 #### Failures for iz-cpm
 
 ```
@@ -247,7 +250,6 @@ Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 ```
 
-
 #### Failures for ntvcm
 
 ```
@@ -267,7 +269,6 @@ FAILED.
 
 ```
 
-
 #### Failures for tnylpo
 
 ```
@@ -282,4 +283,3 @@ FAILED.
 tnylpo: attempted write access to read-only disk
 
 ```
-
