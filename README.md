@@ -67,6 +67,17 @@ I'd be happy to accept additional "extra" tests, as long as they're related to C
 
 
 
+## "Portable" Tests
+
+To allow testing to be carried out on alternate implementations of CP/M, such as source-based ports, there is a simple unified test-program written in C:
+
+* [COMPLETE.C](COMPLETE.C) - Standalone test of "everything", to be compiled with Aztec's C compiler.
+  * Binary included for ease of use.
+
+This compiles with the Aztec C compiler.
+
+
+
 
 # Usage
 
@@ -233,7 +244,6 @@ A>
 
 ```
 
-
 #### Failures for iz-cpm
 
 ```
@@ -257,7 +267,6 @@ Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 ```
 
-
 #### Failures for ntvcm
 
 ```
@@ -277,7 +286,6 @@ FAILED.
 
 ```
 
-
 #### Failures for tnylpo
 
 ```
@@ -292,4 +300,3 @@ FAILED.
 tnylpo: attempted write access to read-only disk
 
 ```
-

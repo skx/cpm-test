@@ -74,6 +74,11 @@ for file in *.COM; do
         continue
     fi
 
+    # So is COMPLETE.COM
+    if [[ "${file}" = "COMPLETE.COM" ]]; then
+	continue
+    fi
+
     #
     # Show the name of the test
     #
