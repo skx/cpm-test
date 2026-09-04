@@ -110,7 +110,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 29/08/2026
+### Test Results 04/09/2026
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -120,9 +120,9 @@ That said you can run the tests yourself to receive current results.
 | CREATE.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | CWRITE.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | DELETE.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| DRIVE.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
+| DRIVE.COM |  FAIL | ✔️ | ✔️ | FAIL | FAIL |
 | FILESIZE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| IOPORT.COM |	✔️ | ✔️ | FAIL| FAIL | ✔️ |
+| IOPORT.COM |	✔️ | ✔️ | ✔️ | FAIL | ✔️ |
 | LOGVEC.COM |	FAIL | ✔️ | ✔️ | FAIL | FAIL |
 | RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RANDREC.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -244,14 +244,10 @@ A>
 
 ```
 
+
 #### Failures for iz-cpm
 
 ```
-===== DRIVE.COM =====
-
-Bdos Err On I: Bad SectorFAILED.
-===== IOPORT.COM =====
-FAILED.
 ===== RO2.COM =====
 
 Bdos Err On B: Bad Sector
@@ -264,8 +260,8 @@ Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
 ```
+
 
 #### Failures for ntvcm
 
@@ -286,6 +282,7 @@ FAILED.
 
 ```
 
+
 #### Failures for tnylpo
 
 ```
@@ -300,3 +297,4 @@ FAILED.
 tnylpo: attempted write access to read-only disk
 
 ```
+
