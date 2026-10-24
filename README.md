@@ -110,7 +110,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 04/09/2026
+### Test Results 24/10/2026
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -127,13 +127,15 @@ That said you can run the tests yourself to receive current results.
 | RANDOMRW.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RANDREC.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RAWIO.COM |  ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| READWRITE.COM |  FAIL | ✔️ | ✔️ | ✔️ | FAIL |
+| READWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | FAIL |
 | RENAME.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RO1.COM |  FAIL | ✔️ | ✔️ | FAIL | ✔️ |
 | RO2.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
 | SEARCH.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SETDMA.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | USERNUM.COM |	 FAIL | ✔️ | ✔️ | FAIL | ✔️ |
+| WRAP1.COM |  ✔️ | ✔️ | FAIL| ✔️ | FAIL |
+| WRAP2.COM |  ✔️ | ✔️ | FAIL| ✔️ | FAIL |
 | WRITEZF.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | WSTRING.COM |	 ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
@@ -202,12 +204,6 @@ A>
 FAILED.
 
 A>
-===== READWRITE.COM =====
-
-A>
-File already present.  Aborting
-
-A>
 ===== RO1.COM =====
 
 A>
@@ -259,7 +255,17 @@ Bdos Err On B: Bad SectorFAILED.
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
 Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
+Bdos Err On B: Bad Sector===== WRAP1.COM =====
+
+thread 'main' panicked at src/fcb.rs:78:26:
+attempt to add with overflow
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+===== WRAP2.COM =====
+
+thread 'main' panicked at src/bdos_environment.rs:102:43:
+attempt to add with overflow
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
 ```
 
 
@@ -295,6 +301,10 @@ FAILED.
 FAILED.
 ===== RO2.COM =====
 tnylpo: attempted write access to read-only disk
+===== WRAP1.COM =====
+tnylpo: invalid argument in BDOS call
+===== WRAP2.COM =====
+tnylpo: invalid argument in BDOS call
 
 ```
 
