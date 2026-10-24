@@ -1,0 +1,57 @@
+;; Test that emulators don't segfault when asked to read
+;; a file record into the DMA area, when that DMA area
+;; will need to wrap around at the top of RAM.
+
+        org     100h
+
+include header.inc
+
+start:
+        ;; Delete the file, if present.
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; create the file
+        ld      de, filename
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; Move the DMA address to the end of RAM.
+        ld      DE, 0xfffb
+        ld      c, BDOS_SET_DMA
+        call    BDOS
+
+        ;; Write a record to the file.
+        ld      de, filename
+        ld      c, BDOS_FILE_WRITE
+        call    BDOS
+
+        ;; Close the file.
+        ld      de, filename
+        ld      c, BDOS_FILE_CLOSE
+        call    BDOS
+
+        ;; Delete the file
+        ld      de, filename
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;; success
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; exit
+        ret
+
+
+passed_msg:
+        db "PASSED."
+        db 0x0a, 0x0d, "$"
+
+filename:
+        db      0
+        db      "WRAP2  "
+        db      "DAT"
+        ds      24,0

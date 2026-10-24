@@ -1,0 +1,38 @@
+;; Test that emulators don't segfault when asked to operate
+;; on an FCB which wraps around from the highest address in
+;; RAM
+
+        org     100h
+
+include header.inc
+
+start:
+
+        ;; We're really just going to call "DELETE"
+        ;; and "CREATE"
+        ;;
+        ;; We don't care about the results specifically
+        ;; the goal of this test is specifically that
+        ;; the emulator doesn't crash, or segfault.
+
+        ;; CREATE
+        ld      de, 0xfffb
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;; DELETE
+        ld      de, 0xfffb
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; exit
+        ret
+
+
+passed_msg:
+        db "PASSED."
+        db 0x0a, 0x0d, "$"
