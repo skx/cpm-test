@@ -1,5 +1,5 @@
-;; Test that emulators don't segfault when asked to read
-;; a file record into the DMA area, when that DMA area
+;; Test that emulators don't segfault when asked to write
+;; a file record from the DMA area, when that DMA area
 ;; will need to wrap around at the top of RAM.
 
         org     100h
