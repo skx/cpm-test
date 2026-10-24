@@ -52,6 +52,4 @@ if [ ! -d tnylpo ] ; then
 else
     (cd tnylpo && git pull)
 fi
-( cd tnylpo && make )
-
-
+( cd tnylpo && sh build.sh )

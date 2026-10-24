@@ -1,0 +1,58 @@
+;; Test that emulators don't segfault when asked to operate
+;; on an FCB which wraps around from the highest address in
+;; RAM
+
+        org     100h
+
+include header.inc
+
+start:
+
+        ;; Copy the memory at the start of our RAM somewhere safe
+        ;;
+        ;; Because the FCB entry will be updated and it will have
+        ;; effects on the values at start of RAM.
+        ld de, 0x3000
+        ld hl, 0x0000
+        ld bc, 0x0100
+        ldir
+
+        ;; CREATE
+        ld      de, 0xfffb
+        ld      c, BDOS_FILE_CREATE
+        call    BDOS
+
+        ;;
+        ;; Restore the memory at the start of RAM.
+        ;; This way "call 0x0005" won't execute randomness.
+        ;;
+        ld de, 0x0000
+        ld hl, 0x3000
+        ld bc, 0x0100
+        ldir
+
+        ;; DELETE
+        ld      de, 0xfffb
+        ld      c, BDOS_FILE_DELETE
+        call    BDOS
+
+        ;;
+        ;; Restore the memory at the start of RAM.
+        ;; This way "call 0x0005" won't execute randomness.
+        ;;
+        ld de, 0x0000
+        ld hl, 0x3000
+        ld bc, 0x0100
+        ldir
+
+        ld      de, passed_msg
+        ld      c, BDOS_C_WRITESTR
+        call    BDOS
+
+        ;; exit
+        ret
+
+
+passed_msg:
+        db "PASSED."
+        db 0x0a, 0x0d, "$"
