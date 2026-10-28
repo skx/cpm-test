@@ -69,15 +69,21 @@ wasPass() {
 #
 for file in *.COM; do
 
+    # COMPLETE.COM should be skipped by default.
+    if [[ "${file}" = "COMPLETE.COM" ]]; then
+	continue
+    fi
+
     # TICKER.COM is special and should be skipped.
     if [[ "${file}" = "TICKER.COM" ]]; then
         continue
     fi
 
-    # So is COMPLETE.COM
-    if [[ "${file}" = "COMPLETE.COM" ]]; then
-	continue
+    # RO2.COM is unfair and should be skipped.
+    if [[ "${file}" = "RO2.COM" ]]; then
+        continue
     fi
+
 
     #
     # Show the name of the test

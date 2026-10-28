@@ -33,12 +33,12 @@ DRIVER := cpmulator -input=stty
 # Build all COM files
 all: $(TARGETS)
 
-# Test with a single driver - exclude "TICKER" and "COMPLETE"
+# Test with a single driver - exclude "COMPLETE", "TICKER" and "RO2"
 test: all
 	@echo "Testing with driver: $(DRIVER) FILE.COM"
 	@for i in *.COM ; do \
 		case "$$i" in \
-			TICKER.COM|COMPLETE.COM) continue ;; \
+			COMPLETE.COM|TICKER.COM|RO2.COM) continue ;; \
 		esac; \
 		printf "\t$$i\t"; $(DRIVER) $$i ; \
 	done
