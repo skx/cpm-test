@@ -17,23 +17,9 @@ start:
         ld bc, 0x0100
         ldir
 
-        ;; CREATE
+        ;; Open
         ld      de, 0xfffb
-        ld      c, BDOS_FILE_CREATE
-        call    BDOS
-
-        ;;
-        ;; Restore the memory at the start of RAM.
-        ;; This way "call 0x0005" won't execute randomness.
-        ;;
-        ld de, 0x0000
-        ld hl, 0x3000
-        ld bc, 0x0100
-        ldir
-
-        ;; DELETE
-        ld      de, 0xfffb
-        ld      c, BDOS_FILE_DELETE
+        ld      c, BDOS_FILE_OPEN
         call    BDOS
 
         ;;

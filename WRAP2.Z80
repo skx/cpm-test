@@ -52,6 +52,6 @@ passed_msg:
 
 filename:
         db      0
-        db      "WRAP2  "
+        db      "WRAP2   "
         db      "DAT"
         ds      24,0
