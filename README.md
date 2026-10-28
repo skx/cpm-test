@@ -110,7 +110,7 @@ That said you can run the tests yourself to receive current results.
 * Run `./run.sh` to output a markdown table of results.
 
 
-### Test Results 24/10/2026
+### Test Results 28/10/2026
 
 | Test | [cpm](https://github.com/jhallen/cpm) | [cpmulator](https://github.com/skx/cpmulator) | [iz-cpm](https://github.com/ivanizag/iz-cpm) | [ntvcm](https://github.com/davidly/ntvcm) | [tnyplo](https://gitlab.com/gbrein/tnylpo)
 | ---- | -- | --  | -- | -- | -- |
@@ -130,7 +130,6 @@ That said you can run the tests yourself to receive current results.
 | READWRITE.COM |  ✔️ | ✔️ | ✔️ | ✔️ | FAIL |
 | RENAME.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | RO1.COM |  FAIL | ✔️ | ✔️ | FAIL | ✔️ |
-| RO2.COM |  FAIL | ✔️ | FAIL| FAIL | FAIL |
 | SEARCH.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | SETDMA.COM |	✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | USERNUM.COM |	 FAIL | ✔️ | ✔️ | FAIL | ✔️ |
@@ -220,17 +219,6 @@ Unrecognized BDOS-Function 28:
 AF=0044	 BC=001c  DE=0002  HL=0000  SP=d471
 Stack =	 12e db69 d588 4f43  14d 2424 2024 2020
 
-===== RO2.COM =====
-
-A>
-FAILED.
-
-A>
-
-Unrecognized BDOS-Function 28:
-AF=0042	 BC=001c  DE=0264  HL=0000  SP=d471
-Stack =	 175 db69 d588 4f43  14d 2424 2024 2020
-
 ===== USERNUM.COM =====
 
 A>
@@ -244,18 +232,7 @@ A>
 #### Failures for iz-cpm
 
 ```
-===== RO2.COM =====
-
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad SectorFAILED.
-
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector
-Bdos Err On B: Bad Sector===== WRAP1.COM =====
+===== WRAP1.COM =====
 
 thread 'main' panicked at src/fcb.rs:78:26:
 attempt to add with overflow
@@ -280,9 +257,6 @@ FAILED.
 FAILED.
 ===== RO1.COM =====
 FAILED.
-===== RO2.COM =====
-unhandled BDOS FUNCTION!!!!!!!!!!!!!!!: 28 = 0x1c
-FAILED.
 ===== USERNUM.COM =====
 FAILED.
 
@@ -299,8 +273,6 @@ tnylpo: access to invalid/unconfigured disk
 FAILED.
 ===== READWRITE.COM =====
 FAILED.
-===== RO2.COM =====
-tnylpo: attempted write access to read-only disk
 ===== WRAP1.COM =====
 tnylpo: invalid argument in BDOS call
 ===== WRAP2.COM =====
