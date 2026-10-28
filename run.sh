@@ -64,6 +64,15 @@ wasPass() {
     fi
 }
 
+
+#
+# Remove any files that might be left over from previous runs.
+#
+cleanState() {
+    rm -f -- *.dat *.DAT
+}
+
+
 #
 # For each test
 #
@@ -71,7 +80,7 @@ for file in *.COM; do
 
     # COMPLETE.COM should be skipped by default.
     if [[ "${file}" = "COMPLETE.COM" ]]; then
-	continue
+        continue
     fi
 
     # TICKER.COM is special and should be skipped.
@@ -84,6 +93,10 @@ for file in *.COM; do
         continue
     fi
 
+    #
+    # Cleaup
+    #
+    cleanState
 
     #
     # Show the name of the test
@@ -192,3 +205,8 @@ done
 # Remove the output file
 #
 rm out.tmp
+
+#
+# And remove any leftover files.
+#
+cleanState
